@@ -48,13 +48,13 @@ export async function getMetadata(pathname, apiPath = null) {
   }
 
   // 2️⃣ Static SEO fallback
-  // const staticSeo = SEO[pathname] || SEO["/"];
-  // return {
-  //   title: staticSeo.title,
-  //   description: staticSeo.description,
-  //   keywords: staticSeo.keywords,
-  //   alternates: {
-  //     canonical: staticSeo.canonical,
-  //   },
-  // };
+  const staticSeo = SEO[pathname] || SEO["/"];
+  return {
+    title: staticSeo.title,
+    description: staticSeo.description,
+    keywords: staticSeo.keywords,
+    alternates: {
+      canonical: staticSeo.canonical,
+    },
+  };
 }
