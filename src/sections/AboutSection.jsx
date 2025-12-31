@@ -6,8 +6,6 @@ import DOMPurify from "dompurify";
 
 export default function AboutSection() {
   const [about, setAbout] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
@@ -18,22 +16,25 @@ export default function AboutSection() {
         setAbout(data);
       } catch (error) {
         console.error("Failed to fetch About data", error);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchAbout();
   }, [API_URL]);
 
-  if (loading) return null;
+  // 🔑 AOS FIX
+  useEffect(() => {
+    if (about && window.AOS) {
+      window.AOS.refreshHard();
+    }
+  }, [about]);
+
   if (!about) return null;
 
   return (
     <section className="about-section py-4">
       <div className="container">
         <div className="row align-items-center">
-          {/* Left Content */}
           <div className="col-lg-6 mb-4 mb-lg-0">
             <div
               className="about-content pe-lg-5"
@@ -41,7 +42,6 @@ export default function AboutSection() {
               data-aos-duration="1000"
             >
               <h6 className="subtitle text-warning">About Us</h6>
-
               <h2 className="title">{about.title}</h2>
 
               <div
@@ -62,14 +62,12 @@ export default function AboutSection() {
             </div>
           </div>
 
-          {/* Right Image */}
           <div className="col-lg-6 text-end">
             <div
               className="about-img position-relative"
               data-aos="fade-left"
               data-aos-duration="1000"
             >
-              <div className="bg-shape"></div>
               <img
                 src={`${API_URL}${about.image}`}
                 alt="About IMT Hyderabad"
