@@ -3,11 +3,20 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-
+import Image from "next/image";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 // Dynamically import OwlCarousel to avoid SSR issues
 
-
 export default function ExecutiveEducation() {
+  const [emblaRef] = useEmblaCarousel(
+    {
+      loop: true,
+      align: "start",
+      containScroll: "trimSnaps",
+    },
+    [Autoplay({ delay: 2000, stopOnInteraction: false })]
+  );
   //recent programs
   const data = {
     workshops: [
@@ -221,10 +230,8 @@ export default function ExecutiveEducation() {
   // Initialize AOS
   useEffect(() => {
     import("aos").then((AOS) => {
-      AOS.init({
-        duration: 1000,
-        once: true,
-      });
+      AOS.init({ once: true });
+      AOS.refresh();
     });
   }, []);
 
@@ -338,6 +345,68 @@ export default function ExecutiveEducation() {
         .mx-1 {
           margin-top: 10px;
         }
+          /* ================= EMBLA CLIENTS ================= */
+
+.embla {
+  overflow: hidden;
+  width: 100%;
+}
+
+.embla__container {
+  display: flex;
+}
+
+.embla__slide {
+  flex: 0 0 25%; /* Desktop: 4 */
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.logo-box {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.logo-box:hover {
+  transform: translateY(-5px);
+}
+
+/* -------- RESPONSIVE -------- */
+
+@media (max-width: 1200px) {
+  .embla__slide {
+    flex: 0 0 33.333%;
+  }
+}
+
+@media (max-width: 992px) {
+  .embla__slide {
+    flex: 0 0 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .embla__slide {
+    flex: 0 0 50%; /* 🔥 same same */
+  }
+}
+
+@media (max-width: 576px) {
+  .embla__slide {
+    flex: 0 0 50%; /* 🔥 same same */
+  }
+
+  .logo-box {
+    height: 120px;
+  }
+}
+
       `,
         }}
       />
@@ -1512,50 +1581,33 @@ export default function ExecutiveEducation() {
       </section>
 
       {/* Clients Section */}
-      <section
-        className="placement-alliances-section py-4"
-        data-aos="fade-up"
-        data-aos-duration="1000"
-      >
+      {/* Clients Section */}
+      <section className="placement-alliances-section py-4" data-aos="fade-up">
         <div className="container text-center">
-          <h6
-            className="subtitle text-center text-warning"
-            data-aos="fade-down"
-            data-aos-delay="100"
-          >
-            Our Clients
-          </h6>
-          <h2
-            className="section-title mb-4"
-            data-aos="zoom-in"
-            data-aos-delay="200"
-          >
-            Our Distinguished Clients
-          </h2>
-          <p className="mb-5" data-aos="fade-up" data-aos-delay="300">
+          <h6 className="subtitle text-warning">Our Clients</h6>
+          <h2 className="section-title mb-4">Our Distinguished Clients</h2>
+          <p className="mb-5">
             We are proud to be associated with top companies.
           </p>
-          <OwlCarousel
-            className="owl-carousel owl-theme"
-            loop
-            margin={20}
-            nav
-            dots={false}
-            autoplay
-            autoplayTimeout={2000}
-            autoplayHoverPause
-            responsive={{
-              0: { items: 1 },
-              600: { items: 3 },
-              1000: { items: 4 },
-            }}
-          >
-            {clients.map((client, index) => (
-              <div className="item" key={index}>
-                <img src={client.src} alt={client.alt} />
-              </div>
-            ))}
-          </OwlCarousel>
+
+          <div className="embla" ref={emblaRef}>
+            <div className="embla__container">
+              {clients.map((client, index) => (
+                <div className="embla__slide" key={index}>
+                  <div className="logo-box">
+                    <Image
+                      src={client.src}
+                      alt={client.alt}
+                      width={140}
+                      height={80}
+                      style={{ objectFit: "contain" }}
+                      priority={index < 4}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1607,3 +1659,4 @@ export default function ExecutiveEducation() {
     </>
   );
 }
+
