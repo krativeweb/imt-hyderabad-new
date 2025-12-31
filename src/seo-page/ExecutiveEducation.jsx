@@ -5,9 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 
 // Dynamically import OwlCarousel to avoid SSR issues
-const OwlCarousel = dynamic(() => import("react-owl-carousel"), {
-  ssr: false,
-});
+
 
 export default function ExecutiveEducation() {
   //recent programs
