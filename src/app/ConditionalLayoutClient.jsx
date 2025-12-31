@@ -107,7 +107,7 @@ export default function ConditionalHeadAndScripts({ children }) {
           {/* Your custom JS (LAST) */}
           <Script
             src="/js/main.js"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             onLoad={() => {
               // Ensure plugins initialize AFTER everything is ready
               if (window.AOS) {
