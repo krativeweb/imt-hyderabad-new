@@ -4,10 +4,22 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import Faculties from "@/seo-page/FacultiesClient";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 // Dynamically import OwlCarousel to avoid SSR issues
-const OwlCarousel = dynamic(() => import("react-owl-carousel"), { ssr: false });
+
 
 export default function PGDMProgramsSection() {
+
+  const [emblaRef] = useEmblaCarousel(
+    {
+      loop: true,
+      align: "start",
+      skipSnaps: false,
+    },
+    [Autoplay({ delay: 4000, stopOnInteraction: false })]
+  );
+
   // Initialize AOS
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -659,6 +671,33 @@ export default function PGDMProgramsSection() {
           padding: 1.5rem;
         }
       }
+        /* Embla Carousel */
+.embla {
+  overflow: hidden;
+  width: 100%;
+}
+
+.embla__container {
+  display: flex;
+}
+
+.embla__slide {
+  flex: 0 0 33.333%;
+  padding: 0 12px;
+}
+
+@media (max-width: 992px) {
+  .embla__slide {
+    flex: 0 0 50%;
+  }
+}
+
+@media (max-width: 576px) {
+  .embla__slide {
+    flex: 0 0 100%;
+  }
+}
+
 
     `,
         }}
@@ -1712,34 +1751,37 @@ export default function PGDMProgramsSection() {
           <h2 className="text-center fw-bold mb-4 text-warning">
             LEARN ABOUT THE PROGRAM
           </h2>
-          <OwlCarousel className="owl-theme" {...carouselOptions}>
-            {[
-              "CMLanyWFTME",
-              "QwEmFPKaA-o",
-              "WtN09_qclMs?si=aqUBOfsve2WGVDVb",
-              "CD_6_echnCo?si=pGMl3I8ck7OIkWDM",
-              "t8KrTbNpDn0?si=h-lq-fbmDUZykP36",
-              "bPrwMQ5vOFI?si=CQVYPvKuglUN0BRP",
-              "DhOWt7ABkIE",
-              "ycFyCZ5dREs",
-              "-9I-E3pPmFE",
-              "UZNqlVb_ru4",
-              "iwADM_Hk1l0",
-              "Ukp9r6Z0ncU",
-            ].map((videoId, index) => (
-              <div key={index} className="item">
-                <div className="video-wrapper">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${videoId}`}
-                    title="YouTube video"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  ></iframe>
+
+          <div className="embla" ref={emblaRef}>
+            <div className="embla__container">
+              {[
+                "CMLanyWFTME",
+                "QwEmFPKaA-o",
+                "WtN09_qclMs",
+                "CD_6_echnCo",
+                "t8KrTbNpDn0",
+                "bPrwMQ5vOFI",
+                "DhOWt7ABkIE",
+                "ycFyCZ5dREs",
+                "-9I-E3pPmFE",
+                "UZNqlVb_ru4",
+                "iwADM_Hk1l0",
+                "Ukp9r6Z0ncU",
+              ].map((videoId, index) => (
+                <div className="embla__slide" key={index}>
+                  <div className="video-wrapper">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      title="YouTube video"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </OwlCarousel>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
     </>
