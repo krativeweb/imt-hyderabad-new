@@ -8,6 +8,6 @@ export async function generateMetadata() {
   );
 }
 
-export default function Faculty() {
+export default function FacultyExchange() {
   return <FacultiesExchangeClient />;
 }
