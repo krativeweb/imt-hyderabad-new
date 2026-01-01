@@ -23,6 +23,11 @@ export default function PhotoGallerySection() {
         const res = await fetch(`${API_URL}/api/mandatory/slug/photo-gallery`);
         const json = await res.json();
         setPageData(json);
+        setTimeout(() => {
+          if (window.AOS) {
+            window.AOS.refresh();
+          }
+        }, 300);
       } catch (err) {
         console.error("Failed to fetch page data:", err);
       }
@@ -110,6 +115,8 @@ export default function PhotoGallerySection() {
         }}
       >
         <div
+          data-aos="fade-up"
+          data-aos-delay="200"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(banner_text),
           }}
@@ -235,3 +242,4 @@ export default function PhotoGallerySection() {
     </>
   );
 }
+
