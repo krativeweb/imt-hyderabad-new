@@ -3,9 +3,9 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-
+import PlacementAlliances from "@/sections/PlacementAlliances.jsx";
 // Dynamically import OwlCarousel to avoid SSR issues
-const OwlCarousel = dynamic(() => import("react-owl-carousel"), { ssr: false });
+// const OwlCarousel = dynamic(() => import("react-owl-carousel"), { ssr: false });
 
 export default function PlacementsSection() {
   // Initialize AOS
@@ -465,44 +465,9 @@ export default function PlacementsSection() {
       </section>
 
       {/* Placement Alliances Section */}
-      <section
-        className="placement-alliances-section py-4"
-        data-aos="fade-up"
-        data-aos-duration="1000"
-      >
-        <div className="container text-center">
-          <h6
-            className="subtitle text-center text-white"
-            data-aos="fade-down"
-            data-aos-delay="100"
-          >
-            Our Alliances
-          </h6>
-          <h2
-            className="section-title text-warning mb-4"
-            data-aos="zoom-in"
-            data-aos-delay="200"
-          >
-            PLACEMENT ALLIANCES
-          </h2>
-          <p
-            className="mb-5 text-white"
-            data-aos="fade-up"
-            data-aos-delay="300"
-          >
-            We are proud to be associated with top companies for student
-            placements.
-          </p>
-          <OwlCarousel className="owl-theme" {...placementCarouselOptions}>
-            {placementAlliances.map((item, index) => (
-              <div key={index} className="item">
-                <img src={item.src} alt={item.alt} />
-              </div>
-            ))}
-          </OwlCarousel>
-        </div>
-      </section>
-
+      <section className="py-4" data-aos="fade-up">
+            <PlacementAlliances />
+          </section>
       {/* Message from Head of Corporate Relations */}
       <section className="py-5">
         <div className="container">
