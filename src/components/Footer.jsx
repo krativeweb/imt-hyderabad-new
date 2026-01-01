@@ -6,12 +6,22 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Footer() {
-  const [loaded, setLoaded] = useState(false);
+const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    // Fade out preloader after mount
-    const timeout = setTimeout(() => setLoaded(true), 500);
-    return () => clearTimeout(timeout);
+    const handleLoad = () => {
+      setLoaded(true);
+    };
+
+    if (document.readyState === "complete") {
+      handleLoad();
+    } else {
+      window.addEventListener("load", handleLoad);
+    }
+
+    return () => {
+      window.removeEventListener("load", handleLoad);
+    };
   }, []);
 
   return (
@@ -19,17 +29,14 @@ export default function Footer() {
       {/* Preloader */}
       <div id="preloader" className={`preloader ${loaded ? "fade-out" : ""}`}>
         <Image
-         className="bg-white"
           src="/media/imtpilllogo.webp"
-          alt="Website Logo"
-          width={150}
+          alt="IMT Hyderabad Logo"
+          width={300}
           height={100}
           priority
           unoptimized
-          style={{ width: 300, height: 100 }}
         />
       </div>
-
       {/* Footer */}
       <footer className="footer position-relative dark-background">
         <div className="container footer-top">
@@ -135,7 +142,7 @@ export default function Footer() {
             </div>
 
             {/* Quick Links */}
-            <div className="col-lg-4 col-md-6" style={{ paddingLeft:"29px" }}>
+            <div className="col-lg-4 col-md-6" style={{ paddingLeft: "29px" }}>
               <div className="row">
                 <div className="col-6 footer-links">
                   <h4>Quick Links</h4>
@@ -147,13 +154,17 @@ export default function Footer() {
                       <Link href="fpm-program-hyderabad">FPM</Link>
                     </li>
                     <li>
-                      <Link href="executive-education">Executive Education</Link>
+                      <Link href="executive-education">
+                        Executive Education
+                      </Link>
                     </li>
                     <li>
                       <Link href="placements">Placements</Link>
                     </li>
                     <li>
-                      <Link href="https://alumni.imthyderabad.edu.in">Alumni</Link>
+                      <Link href="https://alumni.imthyderabad.edu.in">
+                        Alumni
+                      </Link>
                     </li>
                     <li>
                       <Link href="Campus-Tour">Campus Tour</Link>
@@ -170,13 +181,19 @@ export default function Footer() {
                       <Link href="student-life-imt">Student Life</Link>
                     </li>
                     <li>
-                      <Link href="international-associations">International Relations</Link>
+                      <Link href="international-associations">
+                        International Relations
+                      </Link>
                     </li>
                     <li>
-                      <Link href="sponsered-research-advisory">Research & Advisory</Link>
+                      <Link href="sponsered-research-advisory">
+                        Research & Advisory
+                      </Link>
                     </li>
                     <li>
-                      <Link href="mandatory-disclosure">Mandatory Disclosure</Link>
+                      <Link href="mandatory-disclosure">
+                        Mandatory Disclosure
+                      </Link>
                     </li>
                     <li>
                       <Link href="newsletters">Newsletters</Link>
@@ -196,25 +213,27 @@ export default function Footer() {
 
             {/* Get Connected / Accreditations */}
             <div className="col-lg-4 col-md-6 footer-subscribe">
-             <div className="accreditations">
-                <h6 className="text-white fw-bold">Accreditations & Approvals</h6>
+              <div className="accreditations">
+                <h6 className="text-white fw-bold">
+                  Accreditations & Approvals
+                </h6>
                 <div className="d-flex flex-wrap align-items-center gap-3 mt-2">
                   <Image
-                   className=""
+                    className=""
                     src="/media/acc/nba.png"
                     alt="Accreditation 1"
                     width={80}
                     height={80}
                   />
                   <Image
-                   className=""
+                    className=""
                     src="/media/acc/sas.jpg"
                     alt="Accreditation 2"
                     width={80}
                     height={80}
                   />
                   <Image
-                   className=""
+                    className=""
                     src="/media/acc/aiu.png"
                     alt="Accreditation 3"
                     width={80}
@@ -226,36 +245,33 @@ export default function Footer() {
                     width={80}
                     height={80}
                   />
-               
                 </div>
               </div>
 
-                 <div className="membership mt-4">
+              <div className="membership mt-4">
                 <h6 className="text-white fw-bold">Member</h6>
                 <div className="d-flex flex-wrap align-items-center gap-3 mt-2">
-             
                   <Image
-                   className=""
+                    className=""
                     src="/media/aacsb-logo.webp"
                     alt="Accreditation 5"
                     width={120}
                     height={80}
                   />
-                       <Image
-                   className=""
+                  <Image
+                    className=""
                     src="/media/acc/ITU Acd Member Logo.jpg"
                     alt="Accreditation 5"
                     width={75}
                     height={80}
                   />
                   <Image
-                   className=""
+                    className=""
                     src="/media/acc/Shastri Logo.png"
                     alt="Accreditation 5"
                     width={140}
                     height={80}
                   />
-                  
                 </div>
               </div>
             </div>
