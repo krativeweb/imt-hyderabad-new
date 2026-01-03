@@ -98,6 +98,33 @@ export default function WorkshopsConferences() {
         />
       </div>
 
+      {/* Breadcrumb */}
+      <div
+        className="breadcrumb p-4"
+        style={{ backgroundColor: "rgb(22, 57, 119)" }}
+      >
+        <div className="container-fluid">
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb bg-transparent p-0 m-0">
+              <li className="breadcrumb-item">
+                <Link
+                  href="/"
+                  className="text-white fw-bold text-decoration-none"
+                >
+                  Home
+                </Link>
+              </li>
+              <li
+                className="breadcrumb-item active text-warning fw-bold"
+                aria-current="page"
+              >
+                {seo?.page_title || "Workshops & Conferences"}
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
       {/* Workshops & Conferences Section */}
       <section id="workshop-conference" className="py-5 faculty-tabs">
         <div className="container" data-aos="fade-up" data-aos-delay="100">
