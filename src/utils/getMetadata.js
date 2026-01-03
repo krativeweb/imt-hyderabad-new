@@ -10,7 +10,7 @@ export async function getMetadata(pathname, apiPath = null) {
         throw new Error("NEXT_PUBLIC_API_URL is undefined");
       }
 
-      console.log("SEO API CALLED:", `${baseUrl}${apiPath}`);
+      // console.log("SEO API CALLED:", `${baseUrl}${apiPath}`);
 
       const res = await fetch(`${baseUrl}${apiPath}`, {
         cache: "no-store",
