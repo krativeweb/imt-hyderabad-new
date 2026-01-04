@@ -105,10 +105,10 @@ export default function CentreDigitalTransformation() {
         </h2>
 
         {/* ===== STATIC TAB BUTTONS ===== */}
-        <ul className="nav nav-pills justify-content-center mb-4">
+        <ul className="nav nav-pills  justify-content-center mb-4">
           <li className="nav-item">
             <button
-              className="nav-link active rounded-pill"
+              className="nav-link active text-dark  rounded-pill"
               data-bs-toggle="pill"
               data-bs-target="#about"
               type="button"
@@ -118,7 +118,7 @@ export default function CentreDigitalTransformation() {
           </li>
           <li className="nav-item">
             <button
-              className="nav-link rounded-pill"
+              className="nav-link text-dark  rounded-pill"
               data-bs-toggle="pill"
               data-bs-target="#people"
               type="button"
