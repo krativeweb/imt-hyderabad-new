@@ -13,7 +13,7 @@ import ConnectSection from "@/sections/ConnectSection";
 import InternationalAssociations from "@/sections/InternationalAssociations";
 import CampusLifeGallery from "@/sections/CampusLifeGallery";
 import PlacementAlliances from "@/sections/PlacementAlliances";
-
+import ApplyButton from "@/components/ApplyButton";
 export default function Home() {
   return (
     <>
@@ -40,6 +40,7 @@ export default function Home() {
       <InternationalAssociations />
       <CampusLifeGallery />
       <PlacementAlliances />
+      <ApplyButton />
     </>
   );
 }
