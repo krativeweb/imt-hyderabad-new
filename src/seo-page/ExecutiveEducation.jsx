@@ -7,7 +7,7 @@ import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 // Dynamically import OwlCarousel to avoid SSR issues
-
+import DistinguishedClientsSection from "@/components/DistinguishedClient";
 export default function ExecutiveEducation() {
   const [emblaRef] = useEmblaCarousel(
     {
@@ -1582,34 +1582,7 @@ export default function ExecutiveEducation() {
 
       {/* Clients Section */}
       {/* Clients Section */}
-      <section className="placement-alliances-section py-4" data-aos="fade-up">
-        <div className="container text-center">
-          <h6 className="subtitle text-warning">Our Clients</h6>
-          <h2 className="section-title mb-4">Our Distinguished Clients</h2>
-          <p className="mb-5">
-            We are proud to be associated with top companies.
-          </p>
-
-          <div className="embla" ref={emblaRef}>
-            <div className="embla__container">
-              {clients.map((client, index) => (
-                <div className="embla__slide" key={index}>
-                  <div className="logo-box">
-                    <Image
-                      src={client.src}
-                      alt={client.alt}
-                      width={140}
-                      height={80}
-                      style={{ objectFit: "contain" }}
-                      priority={index < 4}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      <DistinguishedClientsSection emblaRef={emblaRef} />
 
       {/* Contact Strip */}
       <section
