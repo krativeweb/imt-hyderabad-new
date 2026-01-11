@@ -252,23 +252,40 @@ export default function IMTHyderabad() {
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
       />
       <NavbarFour />
-      <AdmissionBanner />
+      <AdmissionBanner bannerData={data?.[0]} />
 
       <div className="site-main">
-        <RankingsSection />
-        <AdvantagesSection />
-        <DiversitySection />
+        <RankingsSection featuresHtml={data?.[0]?.features_section} />
+        <AdvantagesSection
+          advantagesHtml={data?.[0]?.advantage_of_imt_hyderabad}
+        />
+        <DiversitySection diversityHtml={data?.[0]?.advantage_of_imt_blocks} />
+
         <ProgramsSection />
-        <PlacementsSection />
-        <TestimonialsSection />
-        <AccreditationsSection />
-        <RecruitersCarousel />
-        <EligibilitySection />
-        <ImportantDatesSection />
-        <AdmissionProcessSection />
-        <AdmissionInfoSection />
-        <ProgramHighlightsSection />
-        <CampusLifeSection />
+        <PlacementsSection placementHtml={data?.[0]?.impeccable_placement} />
+        <TestimonialsSection data={data} />
+       <AccreditationsSection
+  images={data?.[0]?.accreditation_images}
+/>
+        <RecruitersCarousel data={data} />
+     <EligibilitySection eligibilityHtml={data?.[0]?.elligibility} />
+
+       <ImportantDatesSection
+  datesHtml={data?.[0]?.remember_important_dates}
+/>
+        <AdmissionProcessSection
+  processHtml={data?.[0]?.admission_process}
+/>
+       <AdmissionInfoSection
+  infoHtml={data?.[0]?.admission_information}
+/>
+        <ProgramHighlightsSection
+  highlightsHtml={data?.[0]?.program_highlights}
+/>
+      <CampusLifeSection
+  contentHtml={data?.[0]?.life_imt_Hyderabad_campus}
+  images={data?.[0]?.life_imt_Hyderabad_images}
+/>
       </div>
       <FooterTwo />
 
@@ -282,63 +299,61 @@ export default function IMTHyderabad() {
         APPLY NOW{" "}
       </a>
 
- {/* ✅ jQuery FIRST */}
-{/* jQuery – FIRST and GLOBAL */}
-<Script
-  src="/admission/js/jquery-3.7.1.min.js"
-  strategy="beforeInteractive"
-  onLoad={() => {
-    // 1️⃣ Make jQuery global
-    window.$ = window.jQuery = window.jQuery || window.$;
+      {/* ✅ jQuery FIRST */}
+      {/* jQuery – FIRST and GLOBAL */}
+      <Script
+        src="/admission/js/jquery-3.7.1.min.js"
+        strategy="beforeInteractive"
+        onLoad={() => {
+          // 1️⃣ Make jQuery global
+          window.$ = window.jQuery = window.jQuery || window.$;
 
-    // 2️⃣ Helper to load scripts in order
-    const loadScript = (src) =>
-      new Promise((resolve) => {
-        const s = document.createElement("script");
-        s.src = src;
-        s.async = false;
-        s.onload = resolve;
-        document.body.appendChild(s);
-      });
+          // 2️⃣ Helper to load scripts in order
+          const loadScript = (src) =>
+            new Promise((resolve) => {
+              const s = document.createElement("script");
+              s.src = src;
+              s.async = false;
+              s.onload = resolve;
+              document.body.appendChild(s);
+            });
 
-    // 3️⃣ Load EVERYTHING in correct order
-    (async () => {
-      await loadScript("/admission/js/jquery-migrate-3.4.1.min.js");
-      await loadScript("/admission/js/bootstrap.min.js");
+          // 3️⃣ Load EVERYTHING in correct order
+          (async () => {
+            await loadScript("/admission/js/jquery-migrate-3.4.1.min.js");
+            await loadScript("/admission/js/bootstrap.min.js");
 
-      await loadScript("/admission/js/jquery.easing.js");
-      await loadScript("/admission/js/jquery-waypoints.js");
-      await loadScript("/admission/js/jquery-validate.js");
-      await loadScript("/admission/js/jquery.prettyPhoto.js");
-      await loadScript("/admission/js/slick.min.js");
-      await loadScript("/admission/js/numinate.min.js");
-      await loadScript("/admission/js/imagesloaded.min.js");
-      await loadScript("/admission/js/jquery-isotope.js");
-      await loadScript("/admission/js/lazysizes.min.js");
-      await loadScript("/admission/js/circle-progress.min.js");
+            await loadScript("/admission/js/jquery.easing.js");
+            await loadScript("/admission/js/jquery-waypoints.js");
+            await loadScript("/admission/js/jquery-validate.js");
+            await loadScript("/admission/js/jquery.prettyPhoto.js");
+            await loadScript("/admission/js/slick.min.js");
+            await loadScript("/admission/js/numinate.min.js");
+            await loadScript("/admission/js/imagesloaded.min.js");
+            await loadScript("/admission/js/jquery-isotope.js");
+            await loadScript("/admission/js/lazysizes.min.js");
+            await loadScript("/admission/js/circle-progress.min.js");
 
-      // ✅ LAST
-      await loadScript("/admission/js/main.js");
-    })();
-  }}
-/>
+            // ✅ LAST
+            await loadScript("/admission/js/main.js");
+          })();
+        }}
+      />
 
-
-
-{/* jQuery migrate */}
-{/* <Script
+      {/* jQuery migrate */}
+      {/* <Script
   src="/admission/js/jquery-migrate-3.4.1.min.js"
   strategy="afterInteractive"
 /> */}
 
-{/* Bootstrap (depends on jQuery) */}
-{/* <Script
+      {/* Bootstrap (depends on jQuery) */}
+      {/* <Script
   src="/admission/js/bootstrap.min.js"
   strategy="afterInteractive"
 /> */}
 
-{/* jQuery plugins */}
-{/* <Script src="/admission/js/jquery.easing.js" strategy="afterInteractive" />
+      {/* jQuery plugins */}
+      {/* <Script src="/admission/js/jquery.easing.js" strategy="afterInteractive" />
 <Script src="/admission/js/jquery-waypoints.js" strategy="afterInteractive" />
 <Script src="/admission/js/jquery-validate.js" strategy="afterInteractive" />
 <Script src="/admission/js/jquery.prettyPhoto.js" strategy="afterInteractive" />
@@ -349,8 +364,8 @@ export default function IMTHyderabad() {
 <Script src="/admission/js/lazysizes.min.js" strategy="afterInteractive" />
 <Script src="/admission/js/circle-progress.min.js" strategy="afterInteractive" /> */}
 
-{/* Theme main JS – ALWAYS LAST */}
-{/* <Script src="/admission/js/main.js" strategy="afterInteractive" /> */}
+      {/* Theme main JS – ALWAYS LAST */}
+      {/* <Script src="/admission/js/main.js" strategy="afterInteractive" /> */}
     </>
   );
 }
