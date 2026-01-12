@@ -373,14 +373,14 @@ export default function Navbar() {
                               Refund Policy
                             </Link>
                           </li>
-                          <li>
+                          {/* <li>
                             <Link
                               className="item"
                               href="/accredations&approvals"
                             >
                               Approvals & Accreditation
                             </Link>
-                          </li>
+                          </li> */}
                           <li>
                             <Link className="item" href="/feedback">
                               Feedback Faculties
@@ -447,6 +447,16 @@ export default function Navbar() {
                           <li>
                             <Link className="item" href="/anualevents">
                               Annual Events
+                            </Link>
+                          </li>
+                          <li>
+                            <Link className="item" href="/accredations">
+                            Accredations
+                            </Link>
+                          </li>
+                             <li>
+                            <Link className="item" href="/approvals">
+                           Approvals
                             </Link>
                           </li>
                         </ul>
