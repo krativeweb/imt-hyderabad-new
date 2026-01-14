@@ -64,15 +64,52 @@ export default function ContactUs() {
     return errors;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const errors = validateForm();
-    if (Object.keys(errors).length) {
-      setFormErrors(errors);
-      return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const errors = validateForm();
+  if (Object.keys(errors).length) {
+    setFormErrors(errors);
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/contact`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Something went wrong");
     }
+
     alert("Message sent successfully!");
-  };
+
+    // ✅ Reset form
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      category: "",
+      message: "",
+    });
+
+    setFormErrors({});
+  } catch (error) {
+    console.error("Contact form error:", error);
+    alert("Failed to send message. Please try again later.");
+  }
+};
+
 
   /* ===============================
      SAFE RETURNS (AFTER HOOKS)
@@ -509,3 +546,4 @@ export default function ContactUs() {
     </>
   );
 }
+
