@@ -1,10 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Loader from "@/components/Loader";
 
 export default function ClubsAndCommittees() {
   // Data embedded in the same file
+
+  const [pageData, setPageData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+
+    const fetchPageData = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/club-communities-seo`
+        );
+        const json = await res.json();
+
+        if (json && json.length > 0) {
+          setPageData(json[0]);
+        }
+      } catch (error) {
+        console.error("Failed to load page data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPageData();
+  }, []);
+
   const clubData = {
     1: {
       title: "ALTIUS – THE SPORTS CLUB OF IMT-HYDERABAD",
@@ -729,9 +756,351 @@ export default function ClubsAndCommittees() {
     };
   }, []);
 
+
+
   return (
     <>
       {/* Embedded CSS */}
+
+      {/* Google Tag Manager (noscript) */}
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-TPXCPVN"
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+        />
+      </noscript>
+
+      {/* Faculty Section - Hero and Breadcrumb */}
+      <section className="faculty-section">
+        <div
+          className="faculty-hero text-center text-white py-5"
+          style={{
+            background: pageData?.banner_image
+              ? `url(${process.env.NEXT_PUBLIC_API_URL}${pageData.banner_image})`
+              : "none",
+            position: "relative",
+            backgroundSize: "cover",
+            height: "60vh",
+            backgroundPosition: "center",
+          }}
+        >
+          <div
+            dangerouslySetInnerHTML={{
+              __html: pageData?.banner_text || "",
+            }}
+          />
+        </div>
+
+        <div
+          className="breadcrumb p-4"
+          style={{ backgroundColor: "rgb(22, 57, 119)" }}
+        >
+          <div className="container-fluid">
+            <nav aria-label="breadcrumb">
+              <ol className="breadcrumb bg-transparent p-0 m-0">
+                <li className="breadcrumb-item">
+                  <Link href="/" className="text-white fw-bold">
+                    Home
+                  </Link>
+                </li>
+                <li
+                  className="breadcrumb-item active text-warning fw-bold"
+                  aria-current="page"
+                >
+                  {pageData?.page_title}
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      {/* Student Life Section */}
+      <section id="executive-education" className="py-5">
+        <div className="container" data-aos="fade-up" data-aos-delay="200">
+          <div
+            dangerouslySetInnerHTML={{
+              __html: pageData?.student_life_imt || "",
+            }}
+          />
+        </div>
+      </section>
+
+      {/* Clubs Section */}
+      <section className="py-5">
+        <div className="container">
+          <h2
+            className="section-title text-center"
+            style={{ color: "#08317a" }}
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
+            CLUBS @ IMT
+          </h2>
+
+          {/* TOP SLIDER (Images Row) */}
+          <div className="slider-container clubs">
+            <div className="cards-slider">
+              <div className="cards-row" ref={clubsRowRef}>
+                {Object.entries(clubData).map(([key, club]) => (
+                  <div className="card-wrapper" key={key}>
+                    <div className="image-card" data-card={key}>
+                      <img src={club.img} alt={club.title} />
+                      <div className="card-overlay">
+                        <h5>{club.title.split(" – ")[0]}</h5>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Slider Nav Buttons + Dots */}
+            <div className="slider-controls">
+              <button className="nav-btn prev-btn" id="prevBtnClubs">
+                &lt;
+              </button>
+              <ul className="dots" id="dotsClubs"></ul>
+              <button className="nav-btn next-btn" id="nextBtnClubs">
+                &gt;
+              </button>
+            </div>
+          </div>
+
+          {/* DETAIL CARD */}
+          <div
+            className="card detail-card"
+            style={{ color: "#08317a" }}
+            ref={detailCardClubsRef}
+          >
+            <div className="card-body">
+              <h4 className="card-title text-center" ref={detailTitleClubsRef}>
+                Club Details
+              </h4>
+
+              <p className="card-text" ref={detailContentClubsRef}></p>
+
+              {/* Social Links */}
+              <div ref={detailLinksClubsRef}></div>
+
+              {/* MENTOR SECTION */}
+              <div className="mentor-section text-center mt-5">
+                <div
+                  ref={mentorContainerClubsRef}
+                  className="d-flex justify-content-center"
+                ></div>
+              </div>
+
+              {/* STUDENTS SLIDER SECTION */}
+              <div className="student-section mt-5">
+                <h4
+                  className="text-center text-uppercase fw-bold mb-4"
+                  style={{ color: "#08317a" }}
+                >
+                  Our Events
+                </h4>
+
+                <div className="student-slider-container">
+                  {/* Prev Button */}
+                  <button
+                    className="student-nav prev-btn btn btn-warning"
+                    ref={studentPrevClubsRef}
+                  >
+                    &lt;
+                  </button>
+
+                  {/* Track Window */}
+                  <div className="student-track-window">
+                    <div
+                      className="student-track"
+                      ref={studentTrackClubsRef}
+                    ></div>
+                  </div>
+
+                  {/* Next Button */}
+                  <button
+                    className="student-nav next-btn btn btn-warning"
+                    ref={studentNextClubsRef}
+                  >
+                    &gt;
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Upcoming Events Carousel */}
+      <section className="video-carousel-section py-5">
+        <div className="container-fluid">
+          <h2 className="text-center fw-bold mb-4 text-warning">Events</h2>
+          <div id="youtube-carousel" className="owl-carousel owl-theme">
+            {["1.webp", "2.webp", "3.webp", "4.webp"].map((img, index) => (
+              <div className="item" key={index}>
+                <div className="image-wrapper">
+                  <img
+                    src={`/media/events/${img}`}
+                    alt={`Image ${index + 1}`}
+                    className="img-fluid"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Committees Section */}
+      <section className="py-5">
+        <div className="container">
+          <h2
+            className="section-title text-center"
+            style={{ color: "#08317a" }}
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
+            COMMITTEES @ IMT
+          </h2>
+          <div className="slider-container committees">
+            <div className="cards-slider">
+              <div className="cards-row" ref={committeesRowRef}>
+                {Object.entries(committeeData).map(([key, committee]) => (
+                  <div className="card-wrapper" key={key}>
+                    <div className="image-card" data-card={key}>
+                      <img src={committee.img} alt={committee.title} />
+                      <div className="card-overlay">
+                        <h5>{committee.title}</h5>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="slider-controls">
+              <button className="nav-btn prev-btn" id="prevBtnCommittee">
+                &lt;
+              </button>
+              <ul className="dots" id="dotsCommittee"></ul>
+              <button className="nav-btn next-btn" id="nextBtnCommittee">
+                &gt;
+              </button>
+            </div>
+          </div>
+          <div
+            className="card detail-card"
+            style={{ color: "#08317a" }}
+            ref={detailCardCommitteeRef}
+          >
+            <div className="card-body">
+              <h4
+                className="card-title text-center"
+                ref={detailTitleCommitteeRef}
+              >
+                Committee Details
+              </h4>
+              <p className="card-text" ref={detailContentCommitteeRef}></p>
+              <div className="mentor-section text-center mt-5">
+                <div
+                  ref={mentorContainerRef}
+                  className="d-flex justify-content-center"
+                ></div>
+              </div>
+              <div className="student-section mt-5">
+                <h4
+                  className="text-center text-uppercase fw-bold mb-4"
+                  style={{ color: "#08317a" }}
+                >
+                  Our Events
+                </h4>
+                <div className="student-slider-container">
+                  <button
+                    className="student-nav prev-btn btn btn-warning"
+                    ref={studentPrevRef}
+                  >
+                    &lt;
+                  </button>
+                  <div className="student-track-window">
+                    <div className="student-track" ref={studentTrackRef}></div>
+                  </div>
+                  <button
+                    className="student-nav next-btn btn btn-warning"
+                    ref={studentNextRef}
+                  >
+                    &gt;
+                  </button>
+                </div>
+              </div>
+              <div
+                ref={detailLinksCommitteeRef}
+                className="mt-4 text-center"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Events Calendar Section */}
+      <section className="events-calendar-section py-5">
+        <div className="container">
+          <h2 className="text-center fw-bold mb-4 text-warning">
+            Events Calendar
+          </h2>
+          <div className="row g-4">
+            <div className="col-md-4 col-sm-6">
+              <div className="event-card">
+                <div className="event-date">
+                  <span className="day">15</span>
+                  <span className="month">Oct</span>
+                </div>
+                <div className="event-info">
+                  <h5 className="event-title">Tech Workshop</h5>
+                  <p className="event-time">10:00 AM - 1:00 PM</p>
+                  <p className="event-location">Auditorium, Block A</p>
+                  <button className="btn btn-warning btn-sm view-details">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-6">
+              <div className="event-card">
+                <div className="event-date">
+                  <span className="day">22</span>
+                  <span className="month">Oct</span>
+                </div>
+                <div className="event-info">
+                  <h5 className="event-title">Art Exhibition</h5>
+                  <p className="event-time">2:00 PM - 5:00 PM</p>
+                  <p className="event-location">Gallery Hall</p>
+                  <button className="btn btn-warning btn-sm view-details">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-6">
+              <div className="event-card">
+                <div className="event-date">
+                  <span className="day">30</span>
+                  <span className="month">Oct</span>
+                </div>
+                <div className="event-info">
+                  <h5 className="event-title">Music Concert</h5>
+                  <p className="event-time">6:00 PM - 9:00 PM</p>
+                  <p className="event-location">Open Ground</p>
+                  <button className="btn btn-warning btn-sm view-details">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -1197,392 +1566,6 @@ export default function ClubsAndCommittees() {
     `,
         }}
       />
-
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-TPXCPVN"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-        />
-      </noscript>
-
-      {/* Faculty Section - Hero and Breadcrumb */}
-      <section className="faculty-section">
-        <div
-          className="faculty-hero text-center text-white py-5"
-          style={{
-            background: "url('/media/banners/annualevents.webp')",
-            position: "relative",
-            backgroundSize: "cover",
-            height: "60vh",
-            backgroundPosition: "center !important",
-          }}
-        >
-          <h2 className="display-5 fw-bold mb-2">
-            Explore Student Life at IMT Hyderabad
-          </h2>
-          <p className="text-white">
-            Where learning continues beyond classrooms. <br />
-            Student clubs and committees foster leadership, teamwork, and
-            real-world problem-solving through collaboration and creativity.
-          </p>
-        </div>
-        <div
-          className="breadcrumb p-4"
-          style={{ backgroundColor: "rgb(22, 57, 119)" }}
-        >
-          <div className="container-fluid">
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb bg-transparent p-0 m-0">
-                <li className="breadcrumb-item">
-                  <Link
-                    style={{ textDecoration: "none" }}
-                    href="/"
-                    className="text-white fw-bold"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li
-                  className="breadcrumb-item active text-warning fw-bold"
-                  aria-current="page"
-                >
-                  Clubs & Committees
-                </li>
-              </ol>
-            </nav>
-          </div>
-        </div>
-      </section>
-
-      {/* Student Life Section */}
-      <section id="executive-education" className="py-5">
-        <div className="container" data-aos="fade-up" data-aos-delay="200">
-          <div className="card p-4">
-            <h2
-              className="section-title text-center"
-              style={{ color: "#08317a" }}
-              data-aos="fade-up"
-              data-aos-delay="200"
-            >
-              STUDENT LIFE @ IMT
-            </h2>
-            <div className="row justify-content-center mt-3">
-              <div className="col-lg-12 text-justify">
-                <p className="mb-4">
-                  "I always knew looking back on the years would make me laugh,
-                  but I never knew looking back on the days would make me cry."
-                </p>
-                <p className="mb-4">
-                  Life at IMT Hyderabad is always filled with events - they say
-                  life starts at 5 in the morning and ends at 5. With the
-                  changing outlook in management education, the theories are
-                  made and solved every now and then, where the businesses are
-                  going global, where the geographies are not just defined with
-                  dotted lines, the need of the hour is to keep up with pace.
-                  Understanding the same, B-Schools around the world are
-                  striving to incorporate all these in their students. So if
-                  everyone is following the same trend worldwide, then how is
-                  life at IMT Hyderabad different from the others?
-                </p>
-                <p className="mb-4">
-                  Well, the answer lies at IMT Hyderabad on one hand when the
-                  student is prepared to cater to the need of the hour, it also
-                  incorporates within the student the forgotten lesson of
-                  humanity. In an environment where students are perceived to be
-                  the most important stakeholder, and in almost every occasion
-                  the students are given a fair chance to voice their opinions,
-                  bring out the sense of involvement, responsibility and pride
-                  within the student. Here, life is not only saturated to the
-                  black prints on crisp paper bound books. The lively campus of
-                  IMT Hyderabad believes in events with the regular lectures in
-                  the form of activities by the students, and of course for the
-                  students. On one hand when there is enormous pressure of
-                  assignments, class tests etc, the other hand has limitless
-                  fun, friends - made for life, soothing chords of guitar and of
-                  course a sense of belonging that the students make at IMT
-                  Hyderabad far from their sunny native lands.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Clubs Section */}
-      <section className="py-5">
-        <div className="container">
-          <h2
-            className="section-title text-center"
-            style={{ color: "#08317a" }}
-            data-aos="fade-up"
-            data-aos-delay="200"
-          >
-            CLUBS @ IMT
-          </h2>
-
-          {/* TOP SLIDER (Images Row) */}
-          <div className="slider-container clubs">
-            <div className="cards-slider">
-              <div className="cards-row" ref={clubsRowRef}>
-                {Object.entries(clubData).map(([key, club]) => (
-                  <div className="card-wrapper" key={key}>
-                    <div className="image-card" data-card={key}>
-                      <img src={club.img} alt={club.title} />
-                      <div className="card-overlay">
-                        <h5>{club.title.split(" – ")[0]}</h5>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Slider Nav Buttons + Dots */}
-            <div className="slider-controls">
-              <button className="nav-btn prev-btn" id="prevBtnClubs">
-                &lt;
-              </button>
-              <ul className="dots" id="dotsClubs"></ul>
-              <button className="nav-btn next-btn" id="nextBtnClubs">
-                &gt;
-              </button>
-            </div>
-          </div>
-
-          {/* DETAIL CARD */}
-          <div
-            className="card detail-card"
-            style={{ color: "#08317a" }}
-            ref={detailCardClubsRef}
-          >
-            <div className="card-body">
-              <h4 className="card-title text-center" ref={detailTitleClubsRef}>
-                Club Details
-              </h4>
-
-              <p className="card-text" ref={detailContentClubsRef}></p>
-
-              {/* Social Links */}
-              <div ref={detailLinksClubsRef}></div>
-
-              {/* MENTOR SECTION */}
-              <div className="mentor-section text-center mt-5">
-                <div
-                  ref={mentorContainerClubsRef}
-                  className="d-flex justify-content-center"
-                ></div>
-              </div>
-
-              {/* STUDENTS SLIDER SECTION */}
-              <div className="student-section mt-5">
-                <h4
-                  className="text-center text-uppercase fw-bold mb-4"
-                  style={{ color: "#08317a" }}
-                >
-                  Our Events
-                </h4>
-
-                <div className="student-slider-container">
-                  {/* Prev Button */}
-                  <button
-                    className="student-nav prev-btn btn btn-warning"
-                    ref={studentPrevClubsRef}
-                  >
-                    &lt;
-                  </button>
-
-                  {/* Track Window */}
-                  <div className="student-track-window">
-                    <div
-                      className="student-track"
-                      ref={studentTrackClubsRef}
-                    ></div>
-                  </div>
-
-                  {/* Next Button */}
-                  <button
-                    className="student-nav next-btn btn btn-warning"
-                    ref={studentNextClubsRef}
-                  >
-                    &gt;
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Upcoming Events Carousel */}
-      <section className="video-carousel-section py-5">
-        <div className="container-fluid">
-          <h2 className="text-center fw-bold mb-4 text-warning">Events</h2>
-          <div id="youtube-carousel" className="owl-carousel owl-theme">
-            {["1.webp", "2.webp", "3.webp", "4.webp"].map((img, index) => (
-              <div className="item" key={index}>
-                <div className="image-wrapper">
-                  <img
-                    src={`/media/events/${img}`}
-                    alt={`Image ${index + 1}`}
-                    className="img-fluid"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Committees Section */}
-      <section className="py-5">
-        <div className="container">
-          <h2
-            className="section-title text-center"
-            style={{ color: "#08317a" }}
-            data-aos="fade-up"
-            data-aos-delay="200"
-          >
-            COMMITTEES @ IMT
-          </h2>
-          <div className="slider-container committees">
-            <div className="cards-slider">
-              <div className="cards-row" ref={committeesRowRef}>
-                {Object.entries(committeeData).map(([key, committee]) => (
-                  <div className="card-wrapper" key={key}>
-                    <div className="image-card" data-card={key}>
-                      <img src={committee.img} alt={committee.title} />
-                      <div className="card-overlay">
-                        <h5>{committee.title}</h5>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="slider-controls">
-              <button className="nav-btn prev-btn" id="prevBtnCommittee">
-                &lt;
-              </button>
-              <ul className="dots" id="dotsCommittee"></ul>
-              <button className="nav-btn next-btn" id="nextBtnCommittee">
-                &gt;
-              </button>
-            </div>
-          </div>
-          <div
-            className="card detail-card"
-            style={{ color: "#08317a" }}
-            ref={detailCardCommitteeRef}
-          >
-            <div className="card-body">
-              <h4
-                className="card-title text-center"
-                ref={detailTitleCommitteeRef}
-              >
-                Committee Details
-              </h4>
-              <p className="card-text" ref={detailContentCommitteeRef}></p>
-              <div className="mentor-section text-center mt-5">
-                <div
-                  ref={mentorContainerRef}
-                  className="d-flex justify-content-center"
-                ></div>
-              </div>
-              <div className="student-section mt-5">
-                <h4
-                  className="text-center text-uppercase fw-bold mb-4"
-                  style={{ color: "#08317a" }}
-                >
-                  Our Events
-                </h4>
-                <div className="student-slider-container">
-                  <button
-                    className="student-nav prev-btn btn btn-warning"
-                    ref={studentPrevRef}
-                  >
-                    &lt;
-                  </button>
-                  <div className="student-track-window">
-                    <div className="student-track" ref={studentTrackRef}></div>
-                  </div>
-                  <button
-                    className="student-nav next-btn btn btn-warning"
-                    ref={studentNextRef}
-                  >
-                    &gt;
-                  </button>
-                </div>
-              </div>
-              <div
-                ref={detailLinksCommitteeRef}
-                className="mt-4 text-center"
-              ></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Events Calendar Section */}
-      <section className="events-calendar-section py-5">
-        <div className="container">
-          <h2 className="text-center fw-bold mb-4 text-warning">
-            Events Calendar
-          </h2>
-          <div className="row g-4">
-            <div className="col-md-4 col-sm-6">
-              <div className="event-card">
-                <div className="event-date">
-                  <span className="day">15</span>
-                  <span className="month">Oct</span>
-                </div>
-                <div className="event-info">
-                  <h5 className="event-title">Tech Workshop</h5>
-                  <p className="event-time">10:00 AM - 1:00 PM</p>
-                  <p className="event-location">Auditorium, Block A</p>
-                  <button className="btn btn-warning btn-sm view-details">
-                    View Details
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4 col-sm-6">
-              <div className="event-card">
-                <div className="event-date">
-                  <span className="day">22</span>
-                  <span className="month">Oct</span>
-                </div>
-                <div className="event-info">
-                  <h5 className="event-title">Art Exhibition</h5>
-                  <p className="event-time">2:00 PM - 5:00 PM</p>
-                  <p className="event-location">Gallery Hall</p>
-                  <button className="btn btn-warning btn-sm view-details">
-                    View Details
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4 col-sm-6">
-              <div className="event-card">
-                <div className="event-date">
-                  <span className="day">30</span>
-                  <span className="month">Oct</span>
-                </div>
-                <div className="event-info">
-                  <h5 className="event-title">Music Concert</h5>
-                  <p className="event-time">6:00 PM - 9:00 PM</p>
-                  <p className="event-location">Open Ground</p>
-                  <button className="btn btn-warning btn-sm view-details">
-                    View Details
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </>
   );
 }
