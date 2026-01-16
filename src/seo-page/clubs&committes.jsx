@@ -1,37 +1,129 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import Loader from "@/components/Loader";
 
-export default function ClubsAndCommittees() {
-  // Data embedded in the same file
+/* =====================================================
+   EMBLA SLIDER (NO refs exposed, CSS untouched)
+===================================================== */
+function EmblaRow({ data, onSelect, activeItem }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    dragFree: false,
+    skipSnaps: false,
+    duration: 12, // 🔥 FAST SNAP
+  });
 
+  return (
+    <div className="cards-slider">
+      <div className="cards-row" ref={emblaRef}>
+        {Object.entries(data).map(([key, item]) => (
+          <div className="card-wrapper" key={key}>
+            <div
+              className={`image-card ${
+                activeItem?.title === item.title ? "active" : ""
+              }`}
+              onClick={() => onSelect(item)}
+            >
+              <img src={item.img} alt={item.title} />
+              <div className="card-overlay">
+                <h5>{item.title.split(" – ")[0]}</h5>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="slider-controls">
+        <button
+          className="nav-btn prev-btn"
+          onClick={() => emblaApi?.scrollPrev(true)}
+        >
+          &lt;
+        </button>
+        <button
+          className="nav-btn next-btn"
+          onClick={() => emblaApi?.scrollNext(true)}
+        >
+          &gt;
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================
+   STUDENT SLIDER (SAME CSS STRUCTURE)
+===================================================== */
+function StudentSlider({ students }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    loop: false,
+    duration: 14,
+  });
+
+  return (
+    <div className="student-slider-container">
+      <button
+        className="student-nav prev-btn btn btn-warning"
+        onClick={() => emblaApi?.scrollPrev(true)}
+      >
+        &lt;
+      </button>
+
+      {/* embla viewport */}
+      <div className="student-track-window" ref={emblaRef}>
+        {/* embla container */}
+        <div className="student-track">
+          {students.map((s, i) => (
+            <div className="student-card-wrapper" key={i}>
+              <div className="member-card">
+                <img src={s.img} alt="" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button
+        className="student-nav next-btn btn btn-warning"
+        onClick={() => emblaApi?.scrollNext(true)}
+      >
+        &gt;
+      </button>
+    </div>
+  );
+}
+
+/* =====================================================
+   PAGE
+===================================================== */
+export default function ClubsAndCommittees() {
   const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     const fetchPageData = async () => {
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/club-communities-seo`
         );
         const json = await res.json();
-
-        if (json && json.length > 0) {
-          setPageData(json[0]);
-        }
-      } catch (error) {
-        console.error("Failed to load page data", error);
+        if (json?.length) setPageData(json[0]);
+      } catch (e) {
+        console.error(e);
       } finally {
         setLoading(false);
       }
     };
-
     fetchPageData();
   }, []);
 
+  /* =====================================================
+     ⛔ PASTE YOUR clubData EXACTLY AS-IS BELOW
+  ===================================================== */
   const clubData = {
     1: {
       title: "ALTIUS – THE SPORTS CLUB OF IMT-HYDERABAD",
@@ -426,353 +518,16 @@ export default function ClubsAndCommittees() {
     },
   };
 
-  // Clubs slider refs
-  const clubsRowRef = useRef(null);
-  const detailCardClubsRef = useRef(null);
-  const detailTitleClubsRef = useRef(null);
-  const detailContentClubsRef = useRef(null);
-  const detailLinksClubsRef = useRef(null);
+  const [activeClub, setActiveClub] = useState(Object.values(clubData)[0]);
+  const [activeCommittee, setActiveCommittee] = useState(
+    Object.values(committeeData)[0]
+  );
 
-  // NEW — Clubs mentor + students refs
-  const mentorContainerClubsRef = useRef(null);
-  const studentTrackClubsRef = useRef(null);
-  const studentPrevClubsRef = useRef(null);
-  const studentNextClubsRef = useRef(null);
-
-  // Committees slider refs
-  const committeesRowRef = useRef(null);
-  const detailCardCommitteeRef = useRef(null);
-  const detailTitleCommitteeRef = useRef(null);
-  const detailContentCommitteeRef = useRef(null);
-  const detailLinksCommitteeRef = useRef(null);
-
-  // Committees mentor + students refs
-  const mentorContainerRef = useRef(null);
-  const studentTrackRef = useRef(null);
-  const studentPrevRef = useRef(null);
-  const studentNextRef = useRef(null);
-
-  // ---------------------------------------------------------
-  // AOS + Owl Carousel
-  // ---------------------------------------------------------
-  useEffect(() => {
-    import("jquery").then(($) => {
-      window.$ = window.jQuery = $.default;
-
-      import("owl.carousel").then(() => {
-        window.$("#youtube-carousel").owlCarousel({
-          loop: true,
-          margin: 20,
-          nav: true,
-          dots: true,
-          autoplay: true,
-          autoplayTimeout: 5000,
-          autoplayHoverPause: true,
-          responsive: {
-            0: { items: 1 },
-            600: { items: 2 },
-            1000: { items: 3 },
-          },
-        });
-      });
-    });
-
-    import("aos").then((AOS) => AOS.init({ duration: 1200, once: true }));
-  }, []);
-
-  // ---------------------------------------------------------
-  // STUDENT SLIDER LOGIC — Committees
-  // ---------------------------------------------------------
-  useEffect(() => {
-    let committeeIdx = 0;
-
-    const updateCommitteeSlider = () => {
-      if (!studentTrackRef.current || !studentTrackRef.current.children.length)
-        return;
-
-      const visible = window.innerWidth >= 992 ? 3 : 1;
-      const total = studentTrackRef.current.children.length;
-      const maxIdx = Math.max(0, total - visible);
-
-      committeeIdx = Math.min(Math.max(committeeIdx, 0), maxIdx);
-
-      const w =
-        studentTrackRef.current.children[0].getBoundingClientRect().width;
-      const gap = 20;
-
-      studentTrackRef.current.style.transform = `translateX(-${
-        committeeIdx * (w + gap)
-      }px)`;
-
-      studentPrevRef.current.disabled = committeeIdx === 0;
-      studentNextRef.current.disabled = committeeIdx === maxIdx;
-    };
-
-    // -------------------------------------------------------
-    // MAIN SLIDER INITIALIZER
-    // -------------------------------------------------------
-    const initMainSlider = ({
-      rowRef,
-      prevBtnId,
-      nextBtnId,
-      dotsId,
-      totalCards,
-      desktopVis,
-      dataObj,
-      detailRefs,
-      onOpen,
-    }) => {
-      const row = rowRef.current;
-      if (!row) return;
-
-      const prevBtn = document.getElementById(prevBtnId);
-      const nextBtn = document.getElementById(nextBtnId);
-      const dots = document.getElementById(dotsId);
-
-      let curPage = 0;
-      let totalPages = 1;
-
-      const calcPages = () => {
-        const items =
-          window.innerWidth >= 992
-            ? desktopVis
-            : window.innerWidth >= 768
-            ? 3
-            : 2;
-        totalPages = Math.ceil(totalCards / items);
-        curPage = Math.min(curPage, totalPages - 1);
-      };
-
-      const render = () => {
-        row.style.transform = `translateX(calc(-${curPage} * (100% + 15px)))`;
-
-        prevBtn.disabled = curPage === 0;
-        nextBtn.disabled = curPage >= totalPages - 1;
-
-        dots.innerHTML = "";
-        for (let i = 0; i < totalPages; i++) {
-          const li = document.createElement("li");
-          li.className = `dot ${i === curPage ? "active" : ""}`;
-          li.onclick = () => {
-            curPage = i;
-            render();
-          };
-          dots.appendChild(li);
-        }
-      };
-
-      const handleOpen = (id, cardEl) => {
-        const item = dataObj[id];
-        if (!item) return;
-
-        row
-          .querySelectorAll(".image-card")
-          .forEach((c) => c.classList.remove("active"));
-        cardEl.classList.add("active");
-
-        detailRefs.card.style.display = "block";
-        detailRefs.title.innerHTML = item.title;
-        detailRefs.content.innerHTML = item.content;
-        detailRefs.links.innerHTML = "";
-
-        if (item.links) {
-          item.links.forEach((l) => {
-            detailRefs.links.innerHTML += `
-            <a href="${l.url}" class="btn btn-sm btn-outline-warning me-2" target="_blank">
-              <i class="${l.icon}"></i>
-            </a>`;
-          });
-        }
-
-        if (onOpen) onOpen(item);
-      };
-
-      row.querySelectorAll(".image-card").forEach((card) => {
-        card.onclick = () => handleOpen(card.dataset.card, card);
-      });
-
-      prevBtn.onclick = () => {
-        if (curPage > 0) curPage--;
-        render();
-      };
-
-      nextBtn.onclick = () => {
-        if (curPage < totalPages - 1) curPage++;
-        render();
-      };
-
-      window.addEventListener("resize", () => {
-        calcPages();
-        render();
-        updateCommitteeSlider();
-        updateClubSlider();
-      });
-
-      calcPages();
-      render();
-
-      const first = row.querySelector(".image-card[data-card='1']");
-      if (first) first.click();
-    };
-
-    // ---------------------------------------------------------
-    // CLUBS STUDENT SLIDER LOGIC
-    // ---------------------------------------------------------
-    let clubIdx = 0;
-
-    const updateClubSlider = () => {
-      if (
-        !studentTrackClubsRef.current ||
-        !studentTrackClubsRef.current.children.length
-      )
-        return;
-
-      const visible = window.innerWidth >= 992 ? 3 : 1;
-      const total = studentTrackClubsRef.current.children.length;
-      const maxIdx = Math.max(0, total - visible);
-
-      clubIdx = Math.min(Math.max(clubIdx, 0), maxIdx);
-
-      const w =
-        studentTrackClubsRef.current.children[0].getBoundingClientRect().width;
-      const gap = 20;
-
-      studentTrackClubsRef.current.style.transform = `translateX(-${
-        clubIdx * (w + gap)
-      }px)`;
-
-      studentPrevClubsRef.current.disabled = clubIdx === 0;
-      studentNextClubsRef.current.disabled = clubIdx === maxIdx;
-    };
-
-    // ---------------------------------------------------------
-    // INIT CLUBS SLIDER
-    // ---------------------------------------------------------
-    initMainSlider({
-      rowRef: clubsRowRef,
-      prevBtnId: "prevBtnClubs",
-      nextBtnId: "nextBtnClubs",
-      dotsId: "dotsClubs",
-      totalCards: 8,
-      desktopVis: 8,
-      dataObj: clubData,
-      detailRefs: {
-        card: detailCardClubsRef.current,
-        title: detailTitleClubsRef.current,
-        content: detailContentClubsRef.current,
-        links: detailLinksClubsRef.current,
-      },
-
-      onOpen: (item) => {
-        mentorContainerClubsRef.current.innerHTML = `
-        <div class="member-card">
-          <img src="${item.mentor.img}" alt="${item.mentor.name}">
-          <div class="member-info"><h5>${item.mentor.name}</h5></div>
-        </div>`;
-
-        studentTrackClubsRef.current.innerHTML = item.students
-          .map(
-            (s) => `
-        <div class="student-card-wrapper">
-         <div class="member-card">
-  <img src="${s.img}" alt="">
-</div>
-
-        </div>`
-          )
-          .join("");
-
-        clubIdx = 0;
-        setTimeout(updateClubSlider, 50);
-      },
-    });
-
-    // ---------------------------------------------------------
-    // INIT COMMITTEES SLIDER
-    // ---------------------------------------------------------
-    initMainSlider({
-      rowRef: committeesRowRef,
-      prevBtnId: "prevBtnCommittee",
-      nextBtnId: "nextBtnCommittee",
-      dotsId: "dotsCommittee",
-      totalCards: 6,
-      desktopVis: 6,
-      dataObj: committeeData,
-      detailRefs: {
-        card: detailCardCommitteeRef.current,
-        title: detailTitleCommitteeRef.current,
-        content: detailContentCommitteeRef.current,
-        links: detailLinksCommitteeRef.current,
-      },
-
-      onOpen: (item) => {
-        mentorContainerRef.current.innerHTML = `
-        <div class="member-card">
-          <img src="${item.mentor.img}" alt="${item.mentor.name}">
-          <div class="member-info"><h5>${item.mentor.name}</h5></div>
-        </div>`;
-
-        studentTrackRef.current.innerHTML = item.students
-          .map(
-            (s) => `
-        <div class="student-card-wrapper">
-          <div class="member-card">
-          <img src="${s.img}" alt="">
-           </div>
-
-        </div>`
-          )
-          .join("");
-
-        committeeIdx = 0;
-        setTimeout(updateCommitteeSlider, 50);
-      },
-    });
-
-    // ---------------------------------------------------------
-    // STUDENT NAV BUTTONS (CLUBS)
-    // ---------------------------------------------------------
-    studentPrevClubsRef.current.onclick = () => {
-      clubIdx--;
-      updateClubSlider();
-    };
-
-    studentNextClubsRef.current.onclick = () => {
-      clubIdx++;
-      updateClubSlider();
-    };
-
-    // ---------------------------------------------------------
-    // STUDENT NAV BUTTONS (COMMITTEES)
-    // ---------------------------------------------------------
-    studentPrevRef.current.onclick = () => {
-      committeeIdx--;
-      updateCommitteeSlider();
-    };
-
-    studentNextRef.current.onclick = () => {
-      committeeIdx++;
-      updateCommitteeSlider();
-    };
-  }, []);
-
-
+  if (loading) return <Loader />;
 
   return (
     <>
-      {/* Embedded CSS */}
-
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-TPXCPVN"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-        />
-      </noscript>
-
-      {/* Faculty Section - Hero and Breadcrumb */}
+      {/* HERO */}
       <section className="faculty-section">
         <div
           className="faculty-hero text-center text-white py-5"
@@ -780,7 +535,6 @@ export default function ClubsAndCommittees() {
             background: pageData?.banner_image
               ? `url(${process.env.NEXT_PUBLIC_API_URL}${pageData.banner_image})`
               : "none",
-            position: "relative",
             backgroundSize: "cover",
             height: "60vh",
             backgroundPosition: "center",
@@ -797,29 +551,18 @@ export default function ClubsAndCommittees() {
           className="breadcrumb p-4"
           style={{ backgroundColor: "rgb(22, 57, 119)" }}
         >
-          <div className="container-fluid">
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb bg-transparent p-0 m-0">
-                <li className="breadcrumb-item">
-                  <Link href="/" className="text-white fw-bold">
-                    Home
-                  </Link>
-                </li>
-                <li
-                  className="breadcrumb-item active text-warning fw-bold"
-                  aria-current="page"
-                >
-                  {pageData?.page_title}
-                </li>
-              </ol>
-            </nav>
-          </div>
+          <Link href="/" className="text-white fw-bold">
+            Home
+          </Link>
+          <span className="text-warning fw-bold ms-2">
+            {pageData?.page_title}
+          </span>
         </div>
       </section>
 
-      {/* Student Life Section */}
-      <section id="executive-education" className="py-5">
-        <div className="container" data-aos="fade-up" data-aos-delay="200">
+      {/* STUDENT LIFE */}
+      <section className="py-5">
+        <div className="container">
           <div
             dangerouslySetInnerHTML={{
               __html: pageData?.student_life_imt || "",
@@ -828,122 +571,69 @@ export default function ClubsAndCommittees() {
         </div>
       </section>
 
-      {/* Clubs Section */}
+      {/* CLUBS */}
       <section className="py-5">
         <div className="container">
           <h2
             className="section-title text-center"
             style={{ color: "#08317a" }}
-            data-aos="fade-up"
-            data-aos-delay="200"
           >
             CLUBS @ IMT
           </h2>
 
-          {/* TOP SLIDER (Images Row) */}
           <div className="slider-container clubs">
-            <div className="cards-slider">
-              <div className="cards-row" ref={clubsRowRef}>
-                {Object.entries(clubData).map(([key, club]) => (
-                  <div className="card-wrapper" key={key}>
-                    <div className="image-card" data-card={key}>
-                      <img src={club.img} alt={club.title} />
-                      <div className="card-overlay">
-                        <h5>{club.title.split(" – ")[0]}</h5>
+            <EmblaRow
+              data={clubData}
+              onSelect={setActiveClub}
+              activeItem={activeClub}
+            />
+          </div>
+
+          {activeClub && (
+            <div className="container mt-4">
+              <div className="card detail-card" style={{ display: "block" }}>
+                <div className="card-body">
+                  <h4 className="card-title text-center">{activeClub.title}</h4>
+
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: activeClub.content,
+                    }}
+                  />
+
+                  <div className="mentor-section text-center mt-5">
+                    <div className="d-flex justify-content-center">
+                      <div className="member-card">
+                        <img src={activeClub.mentor.img} alt="" />
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Slider Nav Buttons + Dots */}
-            <div className="slider-controls">
-              <button className="nav-btn prev-btn" id="prevBtnClubs">
-                &lt;
-              </button>
-              <ul className="dots" id="dotsClubs"></ul>
-              <button className="nav-btn next-btn" id="nextBtnClubs">
-                &gt;
-              </button>
-            </div>
-          </div>
-
-          {/* DETAIL CARD */}
-          <div
-            className="card detail-card"
-            style={{ color: "#08317a" }}
-            ref={detailCardClubsRef}
-          >
-            <div className="card-body">
-              <h4 className="card-title text-center" ref={detailTitleClubsRef}>
-                Club Details
-              </h4>
-
-              <p className="card-text" ref={detailContentClubsRef}></p>
-
-              {/* Social Links */}
-              <div ref={detailLinksClubsRef}></div>
-
-              {/* MENTOR SECTION */}
-              <div className="mentor-section text-center mt-5">
-                <div
-                  ref={mentorContainerClubsRef}
-                  className="d-flex justify-content-center"
-                ></div>
-              </div>
-
-              {/* STUDENTS SLIDER SECTION */}
-              <div className="student-section mt-5">
-                <h4
-                  className="text-center text-uppercase fw-bold mb-4"
-                  style={{ color: "#08317a" }}
-                >
-                  Our Events
-                </h4>
-
-                <div className="student-slider-container">
-                  {/* Prev Button */}
-                  <button
-                    className="student-nav prev-btn btn btn-warning"
-                    ref={studentPrevClubsRef}
-                  >
-                    &lt;
-                  </button>
-
-                  {/* Track Window */}
-                  <div className="student-track-window">
-                    <div
-                      className="student-track"
-                      ref={studentTrackClubsRef}
-                    ></div>
+                  <div className="student-section mt-5">
+                    <h4 className="text-center text-uppercase fw-bold mb-4">
+                      Our Events
+                    </h4>
+                    <StudentSlider students={activeClub.students} />
                   </div>
-
-                  {/* Next Button */}
-                  <button
-                    className="student-nav next-btn btn btn-warning"
-                    ref={studentNextClubsRef}
-                  >
-                    &gt;
-                  </button>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
-      {/* Upcoming Events Carousel */}
+      {/* EVENTS SECTION (RESTORED) */}
       <section className="video-carousel-section py-5">
         <div className="container-fluid">
           <h2 className="text-center fw-bold mb-4 text-warning">Events</h2>
-          <div id="youtube-carousel" className="owl-carousel owl-theme">
-            {["1.webp", "2.webp", "3.webp", "4.webp"].map((img, index) => (
-              <div className="item" key={index}>
+
+          <div className="row g-4 px-4">
+            {["1.webp", "2.webp", "3.webp", "4.webp"].map((img, i) => (
+              <div className="col-md-3 col-sm-6" key={i}>
                 <div className="image-wrapper">
                   <img
                     src={`/media/events/${img}`}
-                    alt={`Image ${index + 1}`}
+                    alt=""
                     className="img-fluid"
                   />
                 </div>
@@ -953,101 +643,65 @@ export default function ClubsAndCommittees() {
         </div>
       </section>
 
-      {/* Committees Section */}
+      {/* COMMITTEES */}
       <section className="py-5">
         <div className="container">
           <h2
             className="section-title text-center"
             style={{ color: "#08317a" }}
-            data-aos="fade-up"
-            data-aos-delay="200"
           >
             COMMITTEES @ IMT
           </h2>
+
           <div className="slider-container committees">
-            <div className="cards-slider">
-              <div className="cards-row" ref={committeesRowRef}>
-                {Object.entries(committeeData).map(([key, committee]) => (
-                  <div className="card-wrapper" key={key}>
-                    <div className="image-card" data-card={key}>
-                      <img src={committee.img} alt={committee.title} />
-                      <div className="card-overlay">
-                        <h5>{committee.title}</h5>
+            <EmblaRow data={committeeData} onSelect={setActiveCommittee} />
+          </div>
+
+          {activeCommittee && (
+            <div className="container mt-4">
+              <div
+                className="card detail-card"
+                style={{ color: "#08317a", display: "block" }}
+              >
+                <div className="card-body">
+                  <h4 className="card-title text-center">
+                    {activeCommittee.title}
+                  </h4>
+
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: activeCommittee.content,
+                    }}
+                  />
+
+                  <div className="mentor-section text-center mt-5">
+                    <div className="d-flex justify-content-center">
+                      <div className="member-card">
+                        <img src={activeCommittee.mentor.img} alt="" />
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-            <div className="slider-controls">
-              <button className="nav-btn prev-btn" id="prevBtnCommittee">
-                &lt;
-              </button>
-              <ul className="dots" id="dotsCommittee"></ul>
-              <button className="nav-btn next-btn" id="nextBtnCommittee">
-                &gt;
-              </button>
-            </div>
-          </div>
-          <div
-            className="card detail-card"
-            style={{ color: "#08317a" }}
-            ref={detailCardCommitteeRef}
-          >
-            <div className="card-body">
-              <h4
-                className="card-title text-center"
-                ref={detailTitleCommitteeRef}
-              >
-                Committee Details
-              </h4>
-              <p className="card-text" ref={detailContentCommitteeRef}></p>
-              <div className="mentor-section text-center mt-5">
-                <div
-                  ref={mentorContainerRef}
-                  className="d-flex justify-content-center"
-                ></div>
-              </div>
-              <div className="student-section mt-5">
-                <h4
-                  className="text-center text-uppercase fw-bold mb-4"
-                  style={{ color: "#08317a" }}
-                >
-                  Our Events
-                </h4>
-                <div className="student-slider-container">
-                  <button
-                    className="student-nav prev-btn btn btn-warning"
-                    ref={studentPrevRef}
-                  >
-                    &lt;
-                  </button>
-                  <div className="student-track-window">
-                    <div className="student-track" ref={studentTrackRef}></div>
+
+                  <div className="student-section mt-5">
+                    <h4 className="text-center text-uppercase fw-bold mb-4">
+                      Our Events
+                    </h4>
+                    <StudentSlider students={activeCommittee.students} />
                   </div>
-                  <button
-                    className="student-nav next-btn btn btn-warning"
-                    ref={studentNextRef}
-                  >
-                    &gt;
-                  </button>
                 </div>
               </div>
-              <div
-                ref={detailLinksCommitteeRef}
-                className="mt-4 text-center"
-              ></div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
-      {/* Events Calendar Section */}
+      {/* EVENTS CALENDAR (RESTORED) */}
       <section className="events-calendar-section py-5">
         <div className="container">
           <h2 className="text-center fw-bold mb-4 text-warning">
             Events Calendar
           </h2>
+
           <div className="row g-4">
             <div className="col-md-4 col-sm-6">
               <div className="event-card">
@@ -1065,6 +719,7 @@ export default function ClubsAndCommittees() {
                 </div>
               </div>
             </div>
+
             <div className="col-md-4 col-sm-6">
               <div className="event-card">
                 <div className="event-date">
@@ -1081,6 +736,7 @@ export default function ClubsAndCommittees() {
                 </div>
               </div>
             </div>
+
             <div className="col-md-4 col-sm-6">
               <div className="event-card">
                 <div className="event-date">
@@ -1194,6 +850,11 @@ export default function ClubsAndCommittees() {
         overflow: hidden;
         width: 100%;
       }
+        .cards-row {
+  display: flex;
+  transition: transform 0.5s ease;  /* ❌ THIS OVERRIDES EMBLA */
+  gap: 15px;
+}
       .student-track {
         display: flex;
         transition: transform 0.5s ease-in-out;
@@ -1282,11 +943,7 @@ export default function ClubsAndCommittees() {
         width: 100%;
         padding: 0 15px;
       }
-      .cards-row {
-        display: flex;
-        transition: transform 0.5s ease;
-        gap: 15px;
-      }
+  
       .card-wrapper {
         flex-shrink: 0;
       }
@@ -1342,13 +999,6 @@ export default function ClubsAndCommittees() {
         border-radius: 5px;
       }
 
-      /* Detail Card */
-      .detail-card {
-        border-radius: 12px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        margin-top: 30px;
-        display: none;
-      }
 
       /* Responsive for Sliders */
       @media (min-width: 992px) {
