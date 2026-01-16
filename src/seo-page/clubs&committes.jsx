@@ -18,6 +18,11 @@ function EmblaRow({ data = {}, onSelect, activeItem }) {
           dragFree: false,
           skipSnaps: false,
           duration: 12,
+
+          // ── These 3 lines are the key fix ──
+          containScroll: "trimSnaps", // Prevents partial slides at the end
+          slidesToScroll: 1, // Force scrolling one slide at a time
+          inViewThreshold: 0.7, // Consider slide "in view" only if 70%+ visible
         }
       : undefined
   );
@@ -170,6 +175,42 @@ export default function ClubsAndCommittees() {
     };
 
     fetchClubs();
+  }, []);
+
+  useEffect(() => {
+    const fetchCommittees = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/committees-imt-data`
+        );
+        const json = await res.json();
+
+        if (json?.success && json.data?.length) {
+          const formatted = {};
+
+          json.data.forEach((item, index) => {
+            formatted[index + 1] = {
+              title: item.tab_title,
+              img: `${process.env.NEXT_PUBLIC_API_URL}${item.tab_image}`,
+              content: item.tab_content,
+              mentor: {
+                img: `${process.env.NEXT_PUBLIC_API_URL}${item.tab_main_image}`,
+              },
+              students: item.our_events.map((img) => ({
+                img: `${process.env.NEXT_PUBLIC_API_URL}${img}`,
+              })),
+            };
+          });
+
+          setCommitteeData(formatted);
+          setActiveCommittee(formatted[1]); // ✅ default active
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchCommittees();
   }, []);
 
   /* =====================================================
@@ -442,138 +483,137 @@ export default function ClubsAndCommittees() {
   //   },
   // };
 
-  const committeeData = {
-    1: {
-      title: "Media Relations Committee",
-      content: `<p>The Media Relations Committee (MRC) is responsible for communicating campus news externally. Known as the "face of IMT-H", MRC publishes content and coordinates campus activities via six teams.</p>
-         <h6>The 6 cohorts & roles</h6>
-         <ul>
-           <li><strong>Admissions:</strong> Helps prospective students, answers queries and boosts awareness.</li>
-           <li><strong>Blog:</strong> Writes creative and concise articles about campus events.</li>
-           <li><strong>Social Media:</strong> Runs official social accounts and live updates during flagship events.</li>
-           <li><strong>Design:</strong> Creates posters and newsletter layouts.</li>
-           <li><strong>Photography:</strong> Captures key campus moments in events.</li>
-           <li><strong>Press Release:</strong> Shares stories and interviews with media outlets.</li>
-         </ul>`,
-      img: "/media/clubs&committes/1comm.jpeg",
-      mentor: { img: "./media/clubs&committes/data/MRC/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/MRC/1.webp" },
-        { img: "./media/clubs&committes/data/MRC/2.webp" },
-        { img: "./media/clubs&committes/data/MRC/3.webp" },
-        { img: "./media/clubs&committes/data/MRC/4.webp" },
-        { img: "./media/clubs&committes/data/MRC/5.webp" },
-        { img: "./media/clubs&committes/data/MRC/6.webp" },
-        { img: "./media/clubs&committes/data/MRC/7.webp" },
-      ],
-    },
-    2: {
-      title: "Mezzo",
-      content: `<p>Mezzo ensures nutritious food and a well-managed dining experience at IMT-H.</p>
-         <h6>Mess</h6>
-         <p>Mezzo manages meal quality (two members taste each meal daily), conducts inventory audits, and ensures hygiene. The mess staffing includes cooks, employees and supervisors; Mezzo acts as intermediary between students and kitchen staff.</p>
-         <h6>Inventory & Infrastructure</h6>
-         <p>Mezzo maintains dining halls (capacity ~300), executive dining, and infrastructure.</p>
-         <h6>Cafeteria (Adda)</h6>
-         <p>Mezzo liaises with Adda staff, recommends menu items, and performs inventory checks to maintain hygiene and stock updates.</p>`,
-      img: "/media/clubs&committes/2comm.png",
-      mentor: { img: "./media/clubs&committes/data/MEZZO/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/MEZZO/1.webp" },
-        { img: "./media/clubs&committes/data/MEZZO/2.webp" },
-        { img: "./media/clubs&committes/data/MEZZO/3.webp" },
-        { img: "./media/clubs&committes/data/MEZZO/4.webp" },
-        { img: "./media/clubs&committes/data/MEZZO/5.webp" },
-        { img: "./media/clubs&committes/data/MEZZO/6.webp" },
-        { img: "./media/clubs&committes/data/MEZZO/7.webp" },
-      ],
-    },
-    3: {
-      title: "TEDx",
-      content: `<p><strong>Objective:</strong> To spread ideas via short powerful talks across Technology, Entertainment and Design.</p>
-         <p>The organising committee plans yearly themes, contacts speakers, manages promotions, sponsorships and budgeting. Volunteers help with social media, logistics and event delivery.</p>
-         <p>We follow TED's mission: "Ideas worth spreading" — bringing diverse perspectives to the local community.</p>
-         <p><strong>Website:</strong> <a href="https://www.tedximthyderabad.com/" target="_blank">https://www.tedximthyderabad.com/</a></p>`,
-      img: "/media/clubs&committes/3comm.png",
-      mentor: { img: "./media/clubs&committes/data/Tedx/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/Tedx/1.webp" },
-        { img: "./media/clubs&committes/data/Tedx/2.webp" },
-        { img: "./media/clubs&committes/data/Tedx/3.webp" },
-        { img: "./media/clubs&committes/data/Tedx/4.webp" },
-        { img: "./media/clubs&committes/data/Tedx/3.webp" },
-        { img: "./media/clubs&committes/data/Tedx/2.webp" },
-        { img: "./media/clubs&committes/data/Tedx/1.webp" },
-      ],
-    },
-    4: {
-      title: "Alumni Relations Committee",
-      content: `<p>The Alumni Relations Committee (ARC) builds a bridge between alumni and IMT Hyderabad, collaborating with other IMT campuses for unity and alumni engagement.</p>
-         <h6>Key Initiatives</h6>
-         <ul>
-           <li><strong>Alumni Walk the Talk:</strong> Web series where alumni share transition stories.</li>
-           <li><strong>Campus Drive series:</strong> Connects alumni recruiters' insights with campus life.</li>
-           <li><strong>Workshops:</strong> Photography workshops and seminars by alumni.</li>
-           <li><strong>Mentorship Program:</strong> One-on-one guidance by alumni experts.</li>
-           <li><strong>CV Screening:</strong> Resume screening before placements.</li>
-           <li><strong>Chapter Meets:</strong> City chapter meets across cities for alumni networking.</li>
-         </ul>`,
-      img: "/media/clubs&committes/4comm.png",
-      mentor: { img: "./media/clubs&committes/data/ARC/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/ARC/1.webp" },
-        { img: "./media/clubs&committes/data/ARC/2.webp" },
-        { img: "./media/clubs&committes/data/ARC/3.webp" },
-        { img: "./media/clubs&committes/data/ARC/4.webp" },
-        { img: "./media/clubs&committes/data/ARC/5.webp" },
-        { img: "./media/clubs&committes/data/ARC/6.webp" },
-        { img: "./media/clubs&committes/data/ARC/7.webp" },
-      ],
-    },
-    5: {
-      title: "International Relations (IRC)",
-      content: `<p><strong>Purpose:</strong> To establish IMT Hyderabad on the global stage by handling inbound/outbound student exchanges and short-term exchange programs (STEP).</p>
-         <p>This committee connects IMT-H with partner institutions worldwide and supports exchange logistics and student coordination.</p>`,
-      img: "/media/clubs&committes/5comm.png",
-      mentor: { img: "./media/clubs&committes/data/IRC/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/IRC/1.webp" },
-        { img: "./media/clubs&committes/data/IRC/2.webp" },
-        { img: "./media/clubs&committes/data/IRC/3.webp" },
-        { img: "./media/clubs&committes/data/IRC/4.webp" },
-        { img: "./media/clubs&committes/data/IRC/5.webp" },
-        { img: "./media/clubs&committes/data/IRC/6.webp" },
-        { img: "./media/clubs&committes/data/IRC/7.webp" },
-      ],
-    },
-    6: {
-      title: "Student Council",
-      content: `<p>The Student Council ensures student welfare, maintains discipline, and acts as a communication bridge between students and management to resolve grievances.</p>
-         <h6>Objectives</h6>
-         <ul>
-           <li>Ensure well-being and discipline of student fraternity</li>
-           <li>Implement changes that deliver long-term student benefits</li>
-           <li>Bridge communication between students and management for grievance resolution</li>
-         </ul>`,
-      img: "/media/clubs&committes/6comm.jpg",
-      mentor: { img: "./media/clubs&committes/data/Student/1.webp" },
-      students: [
-        { img: "./media/c.webp" },
-        { img: "./media/c.webp" },
-        { img: "./media/c.webp" },
-        { img: "./media/c.webp" },
-        { img: "./media/c.webp" },
-        { img: "./media/c.webp" },
-        { img: "./media/c.webp" },
-      ],
-    },
-  };
+  // const committeeData = {
+  //   1: {
+  //     title: "Media Relations Committee",
+  //     content: `<p>The Media Relations Committee (MRC) is responsible for communicating campus news externally. Known as the "face of IMT-H", MRC publishes content and coordinates campus activities via six teams.</p>
+  //        <h6>The 6 cohorts & roles</h6>
+  //        <ul>
+  //          <li><strong>Admissions:</strong> Helps prospective students, answers queries and boosts awareness.</li>
+  //          <li><strong>Blog:</strong> Writes creative and concise articles about campus events.</li>
+  //          <li><strong>Social Media:</strong> Runs official social accounts and live updates during flagship events.</li>
+  //          <li><strong>Design:</strong> Creates posters and newsletter layouts.</li>
+  //          <li><strong>Photography:</strong> Captures key campus moments in events.</li>
+  //          <li><strong>Press Release:</strong> Shares stories and interviews with media outlets.</li>
+  //        </ul>`,
+  //     img: "/media/clubs&committes/1comm.jpeg",
+  //     mentor: { img: "./media/clubs&committes/data/MRC/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/MRC/1.webp" },
+  //       { img: "./media/clubs&committes/data/MRC/2.webp" },
+  //       { img: "./media/clubs&committes/data/MRC/3.webp" },
+  //       { img: "./media/clubs&committes/data/MRC/4.webp" },
+  //       { img: "./media/clubs&committes/data/MRC/5.webp" },
+  //       { img: "./media/clubs&committes/data/MRC/6.webp" },
+  //       { img: "./media/clubs&committes/data/MRC/7.webp" },
+  //     ],
+  //   },
+  //   2: {
+  //     title: "Mezzo",
+  //     content: `<p>Mezzo ensures nutritious food and a well-managed dining experience at IMT-H.</p>
+  //        <h6>Mess</h6>
+  //        <p>Mezzo manages meal quality (two members taste each meal daily), conducts inventory audits, and ensures hygiene. The mess staffing includes cooks, employees and supervisors; Mezzo acts as intermediary between students and kitchen staff.</p>
+  //        <h6>Inventory & Infrastructure</h6>
+  //        <p>Mezzo maintains dining halls (capacity ~300), executive dining, and infrastructure.</p>
+  //        <h6>Cafeteria (Adda)</h6>
+  //        <p>Mezzo liaises with Adda staff, recommends menu items, and performs inventory checks to maintain hygiene and stock updates.</p>`,
+  //     img: "/media/clubs&committes/2comm.png",
+  //     mentor: { img: "./media/clubs&committes/data/MEZZO/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/MEZZO/1.webp" },
+  //       { img: "./media/clubs&committes/data/MEZZO/2.webp" },
+  //       { img: "./media/clubs&committes/data/MEZZO/3.webp" },
+  //       { img: "./media/clubs&committes/data/MEZZO/4.webp" },
+  //       { img: "./media/clubs&committes/data/MEZZO/5.webp" },
+  //       { img: "./media/clubs&committes/data/MEZZO/6.webp" },
+  //       { img: "./media/clubs&committes/data/MEZZO/7.webp" },
+  //     ],
+  //   },
+  //   3: {
+  //     title: "TEDx",
+  //     content: `<p><strong>Objective:</strong> To spread ideas via short powerful talks across Technology, Entertainment and Design.</p>
+  //        <p>The organising committee plans yearly themes, contacts speakers, manages promotions, sponsorships and budgeting. Volunteers help with social media, logistics and event delivery.</p>
+  //        <p>We follow TED's mission: "Ideas worth spreading" — bringing diverse perspectives to the local community.</p>
+  //        <p><strong>Website:</strong> <a href="https://www.tedximthyderabad.com/" target="_blank">https://www.tedximthyderabad.com/</a></p>`,
+  //     img: "/media/clubs&committes/3comm.png",
+  //     mentor: { img: "./media/clubs&committes/data/Tedx/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/Tedx/1.webp" },
+  //       { img: "./media/clubs&committes/data/Tedx/2.webp" },
+  //       { img: "./media/clubs&committes/data/Tedx/3.webp" },
+  //       { img: "./media/clubs&committes/data/Tedx/4.webp" },
+  //       { img: "./media/clubs&committes/data/Tedx/3.webp" },
+  //       { img: "./media/clubs&committes/data/Tedx/2.webp" },
+  //       { img: "./media/clubs&committes/data/Tedx/1.webp" },
+  //     ],
+  //   },
+  //   4: {
+  //     title: "Alumni Relations Committee",
+  //     content: `<p>The Alumni Relations Committee (ARC) builds a bridge between alumni and IMT Hyderabad, collaborating with other IMT campuses for unity and alumni engagement.</p>
+  //        <h6>Key Initiatives</h6>
+  //        <ul>
+  //          <li><strong>Alumni Walk the Talk:</strong> Web series where alumni share transition stories.</li>
+  //          <li><strong>Campus Drive series:</strong> Connects alumni recruiters' insights with campus life.</li>
+  //          <li><strong>Workshops:</strong> Photography workshops and seminars by alumni.</li>
+  //          <li><strong>Mentorship Program:</strong> One-on-one guidance by alumni experts.</li>
+  //          <li><strong>CV Screening:</strong> Resume screening before placements.</li>
+  //          <li><strong>Chapter Meets:</strong> City chapter meets across cities for alumni networking.</li>
+  //        </ul>`,
+  //     img: "/media/clubs&committes/4comm.png",
+  //     mentor: { img: "./media/clubs&committes/data/ARC/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/ARC/1.webp" },
+  //       { img: "./media/clubs&committes/data/ARC/2.webp" },
+  //       { img: "./media/clubs&committes/data/ARC/3.webp" },
+  //       { img: "./media/clubs&committes/data/ARC/4.webp" },
+  //       { img: "./media/clubs&committes/data/ARC/5.webp" },
+  //       { img: "./media/clubs&committes/data/ARC/6.webp" },
+  //       { img: "./media/clubs&committes/data/ARC/7.webp" },
+  //     ],
+  //   },
+  //   5: {
+  //     title: "International Relations (IRC)",
+  //     content: `<p><strong>Purpose:</strong> To establish IMT Hyderabad on the global stage by handling inbound/outbound student exchanges and short-term exchange programs (STEP).</p>
+  //        <p>This committee connects IMT-H with partner institutions worldwide and supports exchange logistics and student coordination.</p>`,
+  //     img: "/media/clubs&committes/5comm.png",
+  //     mentor: { img: "./media/clubs&committes/data/IRC/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/IRC/1.webp" },
+  //       { img: "./media/clubs&committes/data/IRC/2.webp" },
+  //       { img: "./media/clubs&committes/data/IRC/3.webp" },
+  //       { img: "./media/clubs&committes/data/IRC/4.webp" },
+  //       { img: "./media/clubs&committes/data/IRC/5.webp" },
+  //       { img: "./media/clubs&committes/data/IRC/6.webp" },
+  //       { img: "./media/clubs&committes/data/IRC/7.webp" },
+  //     ],
+  //   },
+  //   6: {
+  //     title: "Student Council",
+  //     content: `<p>The Student Council ensures student welfare, maintains discipline, and acts as a communication bridge between students and management to resolve grievances.</p>
+  //        <h6>Objectives</h6>
+  //        <ul>
+  //          <li>Ensure well-being and discipline of student fraternity</li>
+  //          <li>Implement changes that deliver long-term student benefits</li>
+  //          <li>Bridge communication between students and management for grievance resolution</li>
+  //        </ul>`,
+  //     img: "/media/clubs&committes/6comm.jpg",
+  //     mentor: { img: "./media/clubs&committes/data/Student/1.webp" },
+  //     students: [
+  //       { img: "./media/c.webp" },
+  //       { img: "./media/c.webp" },
+  //       { img: "./media/c.webp" },
+  //       { img: "./media/c.webp" },
+  //       { img: "./media/c.webp" },
+  //       { img: "./media/c.webp" },
+  //       { img: "./media/c.webp" },
+  //     ],
+  //   },
+  // };
 
   const [activeClub, setActiveClub] = useState(null);
 
-  const [activeCommittee, setActiveCommittee] = useState(
-    Object.values(committeeData)[0]
-  );
+  const [committeeData, setCommitteeData] = useState({});
+  const [activeCommittee, setActiveCommittee] = useState(null);
 
   /* Loader */
   if (loading) return <Loader fullScreen />;
@@ -1327,6 +1367,17 @@ export default function ClubsAndCommittees() {
     height: 130px;
   }
 }
+/* ✅ FORCE LAYOUT REFLOW AFTER TAB CHANGE */
+.video-carousel-section,
+.events-calendar-section {
+  overflow: hidden;
+}
+
+.image-wrapper img {
+  display: block;
+}
+
+
 
 
     `,
