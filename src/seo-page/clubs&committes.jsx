@@ -8,44 +8,57 @@ import Loader from "@/components/Loader";
 /* =====================================================
    EMBLA SLIDER (NO refs exposed, CSS untouched)
 ===================================================== */
-function EmblaRow({ data, onSelect, activeItem }) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "start",
-    dragFree: false,
-    skipSnaps: false,
-    duration: 12, // 🔥 FAST SNAP
-  });
+function EmblaRow({ data = {}, onSelect, activeItem }) {
+  const hasItems = Object.keys(data).length > 0;
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    hasItems
+      ? {
+          align: "start",
+          dragFree: false,
+          skipSnaps: false,
+          duration: 12,
+        }
+      : undefined
+  );
+
+  if (!hasItems) return null; // ⛔ CRITICAL
 
   return (
     <div className="cards-slider">
-      <div className="cards-row" ref={emblaRef}>
-        {Object.entries(data).map(([key, item]) => (
-          <div className="card-wrapper" key={key}>
-            <div
-              className={`image-card ${
-                activeItem?.title === item.title ? "active" : ""
-              }`}
-              onClick={() => onSelect(item)}
-            >
-              <img src={item.img} alt={item.title} />
-              <div className="card-overlay">
-                <h5>{item.title.split(" – ")[0]}</h5>
+      {/* ✅ EMBLA VIEWPORT */}
+      <div className="cards-viewport" ref={emblaRef}>
+        {/* ✅ EMBLA CONTAINER */}
+        <div className="cards-row">
+          {Object.entries(data).map(([key, item]) => (
+            <div className="card-wrapper" key={key}>
+              <div
+                className={`image-card ${
+                  activeItem?.title === item.title ? "active" : ""
+                }`}
+                onClick={() => onSelect?.(item)}
+              >
+                <img src={item.img} alt={item.title} />
+                <div className="card-overlay">
+                  <h5>{item.title.split(" – ")[0]}</h5>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
+      {/* arrows */}
       <div className="slider-controls">
         <button
           className="nav-btn prev-btn"
-          onClick={() => emblaApi?.scrollPrev(true)}
+          onClick={() => emblaApi?.scrollPrev()}
         >
           &lt;
         </button>
         <button
           className="nav-btn next-btn"
-          onClick={() => emblaApi?.scrollNext(true)}
+          onClick={() => emblaApi?.scrollNext()}
         >
           &gt;
         </button>
@@ -103,6 +116,7 @@ function StudentSlider({ students }) {
 export default function ClubsAndCommittees() {
   const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [clubData, setClubData] = useState({});
 
   useEffect(() => {
     const fetchPageData = async () => {
@@ -121,275 +135,312 @@ export default function ClubsAndCommittees() {
     fetchPageData();
   }, []);
 
+  useEffect(() => {
+    const fetchClubs = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/club-imt-data`
+        );
+        const json = await res.json();
+
+        if (json?.success && json.data?.length) {
+          const formatted = {};
+
+          json.data.forEach((item, index) => {
+            formatted[index + 1] = {
+              title: item.tab_title,
+              img: `${process.env.NEXT_PUBLIC_API_URL}${item.tab_image}`,
+              content: item.tab_content,
+
+              mentor: {
+                img: `${process.env.NEXT_PUBLIC_API_URL}${item.tab_main_image}`,
+              },
+              students: item.our_events.map((img) => ({
+                img: `${process.env.NEXT_PUBLIC_API_URL}${img}`,
+              })),
+            };
+          });
+
+          setClubData(formatted);
+          setActiveClub(formatted[1]);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchClubs();
+  }, []);
+
   /* =====================================================
      ⛔ PASTE YOUR clubData EXACTLY AS-IS BELOW
   ===================================================== */
-  const clubData = {
-    1: {
-      title: "ALTIUS – THE SPORTS CLUB OF IMT-HYDERABAD",
-      content: `<p><strong>Team Altius</strong> aims at bringing together people from different cultures and mindsets with the spirit of Sportsmanship. Altius has always tried to play a role in establishing a proper work-life balance in studies and sports which refreshes the minds of students, to continue the zeal for sports and to raise a bar in the years to come.</p>
-         <h6>Flagship Events</h6>
-         <ul>
-           <li>IMT Hyderabad League (IHL) – Cricket, Football, Basketball, Volleyball, Table Tennis, Mini Marathon</li>
-         </ul>`,
-      img: "/media/clubs&committes/1club.png",
+  // const clubData = {
+  //   1: {
+  //     title: "ALTIUS – THE SPORTS CLUB OF IMT-HYDERABAD",
+  //     content: `<p><strong>Team Altius</strong> aims at bringing together people from different cultures and mindsets with the spirit of Sportsmanship. Altius has always tried to play a role in establishing a proper work-life balance in studies and sports which refreshes the minds of students, to continue the zeal for sports and to raise a bar in the years to come.</p>
+  //        <h6>Flagship Events</h6>
+  //        <ul>
+  //          <li>IMT Hyderabad League (IHL) – Cricket, Football, Basketball, Volleyball, Table Tennis, Mini Marathon</li>
+  //        </ul>`,
+  //     img: "/media/clubs&committes/1club.png",
 
-      links: [
-        {
-          icon: "fab fa-instagram",
-          url: "https://www.instagram.com/altius_imthyd/",
-        },
-        {
-          icon: "fab fa-facebook",
-          url: "https://www.facebook.com/AltiusIMTH/",
-        },
-      ],
-      mentor: { img: "./media/clubs&committes/data/Altius/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/Altius/1.webp" },
-        { img: "./media/clubs&committes/data/Altius/2.webp" },
-        { img: "./media/clubs&committes/data/Altius/3.webp" },
-        { img: "./media/clubs&committes/data/Altius/4.webp" },
-        { img: "./media/clubs&committes/data/Altius/5.webp" },
-        { img: "./media/clubs&committes/data/Altius/6.webp" },
-        { img: "./media/clubs&committes/data/Altius/7.webp" },
-      ],
-    },
-    2: {
-      title: "Communication Wing",
-      content: `<p>The <strong>Communication Wing</strong> is an amalgamation of the different skills that are needed to enhance one's communication. From writing to public speaking, we ensure that there is a fun aspect to effective interaction, as well as to eliminate the fear that people hold when it comes to communicating thoughts and ideas publically.</p>
-         <h6>Objective</h6>
-         <p>To build and improve effective communication and social skills & enhance the productivity and creative abilities of fellow IMT-ians by means of various innovative events, platforms, and exposure.</p>
-         <h6>What do we intend to achieve?</h6>
-         <ul>
-           <li>Peer interaction and development through opportunities like Open Mic Nights, Mock GDs, Debates, etc.</li>
-           <li>Higher visibility for IMT-H by integrating platforms like Toastmasters, Terribly Tiny Tales</li>
-           <li>Creating a unique identity via Humans of IMT Hyderabad initiative</li>
-           <li>Accessible communication development through social media campaigns (#WordoftheDay, Idiom of the week, book reviews, book barters)</li>
-         </ul>
-         <h6>Events</h6>
-         <ul><li>Open Mic Nights</li><li>Big Fight: Debate</li><li>Pantomath</li><li>League of Nations</li></ul>
-         <h6>Initiatives in the pipeline</h6>
-         <ul><li>Toastmasters</li><li>TTT: Terribly Tiny Tales</li></ul>`,
-      img: "/media/clubs&committes/2club.png",
-      links: [
-        {
-          icon: "fab fa-instagram",
-          url: "https://www.instagram.com/communication_wing/",
-        },
-        {
-          icon: "fab fa-linkedin",
-          url: "https://www.linkedin.com/company/communication-wing-imth/",
-        },
-      ],
-      mentor: { img: "./media/clubs&committes/data/CommWing/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/CommWing/1.webp" },
-        { img: "./media/clubs&committes/data/CommWing/2.webp" },
-        { img: "./media/clubs&committes/data/CommWing/3.webp" },
-        { img: "./media/clubs&committes/data/CommWing/1.webp" },
-        { img: "./media/clubs&committes/data/CommWing/5.webp" },
-        { img: "./media/clubs&committes/data/CommWing/6.webp" },
-        { img: "./media/clubs&committes/data/CommWing/7.webp" },
-      ],
-    },
-    3: {
-      title: "Antragna",
-      content: `<p>A PGDM programme doesn't stop at the classroom, especially when the Campus is as diverse as ours. Antragna - the cultural club of IMT Hyderabad is all about bringing out the latent cultural expression inside every student. Apart from celebrating major festivals, Antragna's objective is to promote cultural creativity across performing and visual arts. We facilitate festival celebrations, stage productions, street plays and other cultural showcases.</p>
-         <h6>Objectives</h6>
-         <p>To develop the spirit and attitude among students to explore experiential and innovative ways of learning the new-age business intricacies & strategies through culture and performance.</p>`,
-      img: "/media/clubs&committes/3club.png",
-      links: [],
-      mentor: { img: "./media/clubs&committes/data/Antragna/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/Antragna/1.webp" },
-        { img: "./media/clubs&committes/data/Antragna/2.webp" },
-        { img: "./media/clubs&committes/data/Antragna/3.webp" },
-        { img: "./media/clubs&committes/data/Antragna/4.webp" },
-        { img: "./media/clubs&committes/data/Antragna/5.webp" },
-        { img: "./media/clubs&committes/data/Antragna/6.webp" },
-        { img: "./media/clubs&committes/data/Antragna/7.webp" },
-      ],
-    },
-    4: {
-      title: "Athena",
-      content: `<p><strong>Athena</strong> is a student-driven club that provides a platform for exploring strategy and business thinking. It collaborates with corporates to bring live projects, bridging academics and industry expectations.</p>
-         <h6>Events & Initiatives</h6>
-         <ul>
-           <li><strong>Crazzino</strong> - Athena’s flagship event testing decision making.</li>
-           <li><strong>IHL Fantasy League</strong> - cricket based analytical game run alongside IHL.</li>
-           <li><strong>Be-Trust</strong> - trust and understanding game.</li>
-           <li><strong>Chakravyuh</strong> - major Implez event focused on strategy and ROI.</li>
-           <li><strong>Ace The Space</strong> - minor event testing knowledge and quick thinking.</li>
-         </ul>
-         <h6>Initiatives</h6>
-         <ul>
-           <li>Live projects & case solving with Kraftshala</li>
-           <li>Wall Magazine - curated strategic news/items for campus</li>
-           <li>#WhatsTheirStrategy - online series featuring strategy content</li>
-         </ul>
-         <h6>Meet The Team</h6>
-         <p>Top Row (L-R): Siddharth K, Anubhav Jaiswal, Shalini Shaw, Harshil Patel, Vijeth S, Pranay Jain</p>
-         <p>Middle Row (L-R): Anush Kumar, Lavish Jain</p>
-         <p>Lowest Row (L-R): Akshita Agarwal, Harsh Dhoot, Sakshi Mundhra, Sowmya Alur, Yash Shrivastava</p>
-         <p><strong>Co-ordinators:</strong> Pranay Jain & Sowmya Alur</p>`,
-      img: "/media/clubs&committes/4club.png",
-      links: [],
-      mentor: { img: "./media/clubs&committes/data/Athena/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/Athena/1.webp" },
-        { img: "./media/clubs&committes/data/Athena/2.webp" },
-        { img: "./media/clubs&committes/data/Athena/3.webp" },
-        { img: "./media/clubs&committes/data/Athena/4.webp" },
-        { img: "./media/clubs&committes/data/Athena/5.webp" },
-        { img: "./media/clubs&committes/data/Athena/6.webp" },
-        { img: "./media/clubs&committes/data/Athena/7.webp" },
-      ],
-    },
-    5: {
-      title: "Mercatus Mantra",
-      content: `<p><strong>Objective:</strong> To bring people together and explore marketing aspects that make one industry-fit, using unique and engaging initiatives.</p>
-         <p><strong>About the Club:</strong> Mercatus Mantra applies marketing concepts to practical events and runs year-round initiatives to teach branding, pricing, positioning, and marketing strategy.</p>
-         <h6>What we intend to achieve</h6>
-         <ul>
-           <li>Opportunities for students to participate in and organise marketing-centric events</li>
-           <li>Higher visibility for IMT-H through inter-college participation</li>
-           <li>Keep students updated on marketing trends via campaigns and an annual magazine</li>
-         </ul>
-         <h6>Flagship Event: Buzzaar</h6>
-         <p>An experiential marketplace where participants sell products applying branding, pricing and communication strategies.</p>
-         <h6>Other Events & Initiatives</h6>
-         <ul>
-           <li>Market Surveys</li>
-           <li>Brandathon</li>
-           <li>Brandify</li>
-           <li>AdTract</li>
-           <li>The Riddler’s Anarchy</li>
-           <li>Mercazine (Annual Marketing Magazine)</li>
-         </ul>`,
-      img: "/media/clubs&committes/5club.png",
-      links: [],
-      mentor: { img: "./media/clubs&committes/data/Mercatus/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/Mercatus/1.webp" },
-        { img: "./media/clubs&committes/data/Mercatus/2.webp" },
-        { img: "./media/clubs&committes/data/Mercatus/3.webp" },
-        { img: "./media/clubs&committes/data/Mercatus/4.webp" },
-        { img: "./media/clubs&committes/data/Mercatus/5.webp" },
-        { img: "./media/clubs&committes/data/Mercatus/6.webp" },
-        { img: "./media/clubs&committes/data/Mercatus/7.webp" },
-      ],
-    },
-    6: {
-      title: "Opuskriya",
-      content: `<p>Opuskriya is the Operations Club of IMT-Hyderabad. Its objective is to provide a platform for interaction between students and industry leaders in Operations Management. The club organises operations-based case study events and business simulations.</p>
-         <h6>Flagship & Major Events</h6>
-         <ul>
-           <li><strong>Chain E Maniac</strong> – time-based simulation testing operational decision-making.</li>
-           <li><strong>Episteme</strong> – major case-study event during IMPELZ testing analytical skills.</li>
-           <li><strong>Joker’s Conviction</strong> – minor event assessing adaptive strategy-making skills.</li>
-         </ul>
-         <h6>Certification & Courses</h6>
-         <ul>
-           <li>Six Sigma Green Belt Certification (in association with KPMG)</li>
-           <li>SCM EXE Certification (in association with CII)</li>
-         </ul>`,
-      img: "/media/clubs&committes/6club.jpg",
-      links: [
-        {
-          icon: "fab fa-facebook",
-          url: "https://www.facebook.com/OpuskriyaIMT/",
-        },
-      ],
-      mentor: { img: "./media/clubs&committes/data/Opuskriya/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/Opuskriya/6.webp" },
-        { img: "./media/clubs&committes/data/Opuskriya/2.webp" },
-        { img: "./media/clubs&committes/data/Opuskriya/5.webp" },
-        { img: "./media/clubs&committes/data/Opuskriya/4.webp" },
-        { img: "./media/clubs&committes/data/Opuskriya/1.webp" },
-        { img: "./media/clubs&committes/data/Opuskriya/3.webp" },
-        { img: "./media/clubs&committes/data/Opuskriya/7.webp" },
-      ],
-    },
-    7: {
-      title: "Prarambh",
-      content: `<p>Prarambh (E-Cell) promotes entrepreneurial spirit via events that foster innovation and startup skills.</p>
-         <h6>Events</h6>
-         <ul>
-           <li><strong>Food Fiesta</strong> – annual food festival with student-run stalls</li>
-           <li><strong>Pitch Up</strong> – B-Plan competition and startup podium</li>
-           <li><strong>Ortus</strong> – storytelling platform with entrepreneur talks</li>
-           <li><strong>TiE GRAD</strong> – entrepreneurial workshops in association with TiE</li>
-         </ul>`,
-      img: "/media/clubs&committes/7club.jpg",
-      links: [
-        {
-          icon: "fab fa-instagram",
-          url: "https://www.instagram.com/ecell_imthyderabad/",
-        },
-        {
-          icon: "fas fa-envelope",
-          url: "mailto:prarambh.ecell@imthyderabad.edu.in",
-        },
-        {
-          icon: "fab fa-facebook",
-          url: "https://www.facebook.com/ecell.imthyd/",
-        },
-      ],
-      mentor: { img: "./media/clubs&committes/data/Prarambh/1.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/Prarambh/all.webp" },
-        { img: "./media/clubs&committes/data/Prarambh/all.webp" },
-        { img: "./media/clubs&committes/data/Prarambh/all.webp" },
-        { img: "./media/clubs&committes/data/Prarambh/all.webp" },
-        { img: "./media/clubs&committes/data/Prarambh/all.webp" },
-        { img: "./media/clubs&committes/data/Prarambh/all.webp" },
-        { img: "./media/clubs&committes/data/Prarambh/all.webp" },
-      ],
-    },
-    8: {
-      title: "Tassavur",
-      content: `<p><strong>Objective:</strong> Tassavur (Imagination) was formed in 2018 to give a platform for creative expression — art, photography, filmmaking, poetry and more.</p>
-         <h6>How we work</h6>
-         <p>We create a warm environment through events that channel ideas into tangible creative outcomes.</p>
-         <h6>Events & Activities</h6>
-         <ul>
-           <li>Friendship Day</li>
-           <li>Who Did It Better (online poll for creativity)</li>
-           <li>Live sketching</li>
-           <li>Calligraphy Workshop</li>
-           <li>Photo Walk</li>
-           <li>Independence Day T-shirt design</li>
-           <li>Photography Workshop</li>
-           <li>Riveria (painting event)</li>
-           <li>Face-Off (face painting)</li>
-           <li>Nazaria (single-light photography)</li>
-           <li>Product Design Workshop (with Kilkaari & Co.)</li>
-         </ul>`,
-      img: "/media/clubs&committes/8club.png",
-      links: [
-        {
-          icon: "fab fa-instagram",
-          url: "https://www.instagram.com/tassavurimthyd/",
-        },
-        {
-          icon: "fab fa-facebook",
-          url: "https://www.facebook.com/TassavurIMTHyd/",
-        },
-      ],
-      mentor: { img: "./media/clubs&committes/data/Tassavur/all.webp" },
-      students: [
-        { img: "./media/clubs&committes/data/Tassavur/1.webp" },
-        { img: "./media/clubs&committes/data/Tassavur/2.webp" },
-        { img: "./media/clubs&committes/data/Tassavur/3.webp" },
-        { img: "./media/clubs&committes/data/Tassavur/4.webp" },
-        { img: "./media/clubs&committes/data/Tassavur/5.webp" },
-        { img: "./media/clubs&committes/data/Tassavur/2.webp" },
-        { img: "./media/clubs&committes/data/Tassavur/4.webp" },
-      ],
-    },
-  };
+  //     links: [
+  //       {
+  //         icon: "fab fa-instagram",
+  //         url: "https://www.instagram.com/altius_imthyd/",
+  //       },
+  //       {
+  //         icon: "fab fa-facebook",
+  //         url: "https://www.facebook.com/AltiusIMTH/",
+  //       },
+  //     ],
+  //     mentor: { img: "./media/clubs&committes/data/Altius/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/Altius/1.webp" },
+  //       { img: "./media/clubs&committes/data/Altius/2.webp" },
+  //       { img: "./media/clubs&committes/data/Altius/3.webp" },
+  //       { img: "./media/clubs&committes/data/Altius/4.webp" },
+  //       { img: "./media/clubs&committes/data/Altius/5.webp" },
+  //       { img: "./media/clubs&committes/data/Altius/6.webp" },
+  //       { img: "./media/clubs&committes/data/Altius/7.webp" },
+  //     ],
+  //   },
+  //   2: {
+  //     title: "Communication Wing",
+  //     content: `<p>The <strong>Communication Wing</strong> is an amalgamation of the different skills that are needed to enhance one's communication. From writing to public speaking, we ensure that there is a fun aspect to effective interaction, as well as to eliminate the fear that people hold when it comes to communicating thoughts and ideas publically.</p>
+  //        <h6>Objective</h6>
+  //        <p>To build and improve effective communication and social skills & enhance the productivity and creative abilities of fellow IMT-ians by means of various innovative events, platforms, and exposure.</p>
+  //        <h6>What do we intend to achieve?</h6>
+  //        <ul>
+  //          <li>Peer interaction and development through opportunities like Open Mic Nights, Mock GDs, Debates, etc.</li>
+  //          <li>Higher visibility for IMT-H by integrating platforms like Toastmasters, Terribly Tiny Tales</li>
+  //          <li>Creating a unique identity via Humans of IMT Hyderabad initiative</li>
+  //          <li>Accessible communication development through social media campaigns (#WordoftheDay, Idiom of the week, book reviews, book barters)</li>
+  //        </ul>
+  //        <h6>Events</h6>
+  //        <ul><li>Open Mic Nights</li><li>Big Fight: Debate</li><li>Pantomath</li><li>League of Nations</li></ul>
+  //        <h6>Initiatives in the pipeline</h6>
+  //        <ul><li>Toastmasters</li><li>TTT: Terribly Tiny Tales</li></ul>`,
+  //     img: "/media/clubs&committes/2club.png",
+  //     links: [
+  //       {
+  //         icon: "fab fa-instagram",
+  //         url: "https://www.instagram.com/communication_wing/",
+  //       },
+  //       {
+  //         icon: "fab fa-linkedin",
+  //         url: "https://www.linkedin.com/company/communication-wing-imth/",
+  //       },
+  //     ],
+  //     mentor: { img: "./media/clubs&committes/data/CommWing/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/CommWing/1.webp" },
+  //       { img: "./media/clubs&committes/data/CommWing/2.webp" },
+  //       { img: "./media/clubs&committes/data/CommWing/3.webp" },
+  //       { img: "./media/clubs&committes/data/CommWing/1.webp" },
+  //       { img: "./media/clubs&committes/data/CommWing/5.webp" },
+  //       { img: "./media/clubs&committes/data/CommWing/6.webp" },
+  //       { img: "./media/clubs&committes/data/CommWing/7.webp" },
+  //     ],
+  //   },
+  //   3: {
+  //     title: "Antragna",
+  //     content: `<p>A PGDM programme doesn't stop at the classroom, especially when the Campus is as diverse as ours. Antragna - the cultural club of IMT Hyderabad is all about bringing out the latent cultural expression inside every student. Apart from celebrating major festivals, Antragna's objective is to promote cultural creativity across performing and visual arts. We facilitate festival celebrations, stage productions, street plays and other cultural showcases.</p>
+  //        <h6>Objectives</h6>
+  //        <p>To develop the spirit and attitude among students to explore experiential and innovative ways of learning the new-age business intricacies & strategies through culture and performance.</p>`,
+  //     img: "/media/clubs&committes/3club.png",
+  //     links: [],
+  //     mentor: { img: "./media/clubs&committes/data/Antragna/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/Antragna/1.webp" },
+  //       { img: "./media/clubs&committes/data/Antragna/2.webp" },
+  //       { img: "./media/clubs&committes/data/Antragna/3.webp" },
+  //       { img: "./media/clubs&committes/data/Antragna/4.webp" },
+  //       { img: "./media/clubs&committes/data/Antragna/5.webp" },
+  //       { img: "./media/clubs&committes/data/Antragna/6.webp" },
+  //       { img: "./media/clubs&committes/data/Antragna/7.webp" },
+  //     ],
+  //   },
+  //   4: {
+  //     title: "Athena",
+  //     content: `<p><strong>Athena</strong> is a student-driven club that provides a platform for exploring strategy and business thinking. It collaborates with corporates to bring live projects, bridging academics and industry expectations.</p>
+  //        <h6>Events & Initiatives</h6>
+  //        <ul>
+  //          <li><strong>Crazzino</strong> - Athena’s flagship event testing decision making.</li>
+  //          <li><strong>IHL Fantasy League</strong> - cricket based analytical game run alongside IHL.</li>
+  //          <li><strong>Be-Trust</strong> - trust and understanding game.</li>
+  //          <li><strong>Chakravyuh</strong> - major Implez event focused on strategy and ROI.</li>
+  //          <li><strong>Ace The Space</strong> - minor event testing knowledge and quick thinking.</li>
+  //        </ul>
+  //        <h6>Initiatives</h6>
+  //        <ul>
+  //          <li>Live projects & case solving with Kraftshala</li>
+  //          <li>Wall Magazine - curated strategic news/items for campus</li>
+  //          <li>#WhatsTheirStrategy - online series featuring strategy content</li>
+  //        </ul>
+  //        <h6>Meet The Team</h6>
+  //        <p>Top Row (L-R): Siddharth K, Anubhav Jaiswal, Shalini Shaw, Harshil Patel, Vijeth S, Pranay Jain</p>
+  //        <p>Middle Row (L-R): Anush Kumar, Lavish Jain</p>
+  //        <p>Lowest Row (L-R): Akshita Agarwal, Harsh Dhoot, Sakshi Mundhra, Sowmya Alur, Yash Shrivastava</p>
+  //        <p><strong>Co-ordinators:</strong> Pranay Jain & Sowmya Alur</p>`,
+  //     img: "/media/clubs&committes/4club.png",
+  //     links: [],
+  //     mentor: { img: "./media/clubs&committes/data/Athena/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/Athena/1.webp" },
+  //       { img: "./media/clubs&committes/data/Athena/2.webp" },
+  //       { img: "./media/clubs&committes/data/Athena/3.webp" },
+  //       { img: "./media/clubs&committes/data/Athena/4.webp" },
+  //       { img: "./media/clubs&committes/data/Athena/5.webp" },
+  //       { img: "./media/clubs&committes/data/Athena/6.webp" },
+  //       { img: "./media/clubs&committes/data/Athena/7.webp" },
+  //     ],
+  //   },
+  //   5: {
+  //     title: "Mercatus Mantra",
+  //     content: `<p><strong>Objective:</strong> To bring people together and explore marketing aspects that make one industry-fit, using unique and engaging initiatives.</p>
+  //        <p><strong>About the Club:</strong> Mercatus Mantra applies marketing concepts to practical events and runs year-round initiatives to teach branding, pricing, positioning, and marketing strategy.</p>
+  //        <h6>What we intend to achieve</h6>
+  //        <ul>
+  //          <li>Opportunities for students to participate in and organise marketing-centric events</li>
+  //          <li>Higher visibility for IMT-H through inter-college participation</li>
+  //          <li>Keep students updated on marketing trends via campaigns and an annual magazine</li>
+  //        </ul>
+  //        <h6>Flagship Event: Buzzaar</h6>
+  //        <p>An experiential marketplace where participants sell products applying branding, pricing and communication strategies.</p>
+  //        <h6>Other Events & Initiatives</h6>
+  //        <ul>
+  //          <li>Market Surveys</li>
+  //          <li>Brandathon</li>
+  //          <li>Brandify</li>
+  //          <li>AdTract</li>
+  //          <li>The Riddler’s Anarchy</li>
+  //          <li>Mercazine (Annual Marketing Magazine)</li>
+  //        </ul>`,
+  //     img: "/media/clubs&committes/5club.png",
+  //     links: [],
+  //     mentor: { img: "./media/clubs&committes/data/Mercatus/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/Mercatus/1.webp" },
+  //       { img: "./media/clubs&committes/data/Mercatus/2.webp" },
+  //       { img: "./media/clubs&committes/data/Mercatus/3.webp" },
+  //       { img: "./media/clubs&committes/data/Mercatus/4.webp" },
+  //       { img: "./media/clubs&committes/data/Mercatus/5.webp" },
+  //       { img: "./media/clubs&committes/data/Mercatus/6.webp" },
+  //       { img: "./media/clubs&committes/data/Mercatus/7.webp" },
+  //     ],
+  //   },
+  //   6: {
+  //     title: "Opuskriya",
+  //     content: `<p>Opuskriya is the Operations Club of IMT-Hyderabad. Its objective is to provide a platform for interaction between students and industry leaders in Operations Management. The club organises operations-based case study events and business simulations.</p>
+  //        <h6>Flagship & Major Events</h6>
+  //        <ul>
+  //          <li><strong>Chain E Maniac</strong> – time-based simulation testing operational decision-making.</li>
+  //          <li><strong>Episteme</strong> – major case-study event during IMPELZ testing analytical skills.</li>
+  //          <li><strong>Joker’s Conviction</strong> – minor event assessing adaptive strategy-making skills.</li>
+  //        </ul>
+  //        <h6>Certification & Courses</h6>
+  //        <ul>
+  //          <li>Six Sigma Green Belt Certification (in association with KPMG)</li>
+  //          <li>SCM EXE Certification (in association with CII)</li>
+  //        </ul>`,
+  //     img: "/media/clubs&committes/6club.jpg",
+  //     links: [
+  //       {
+  //         icon: "fab fa-facebook",
+  //         url: "https://www.facebook.com/OpuskriyaIMT/",
+  //       },
+  //     ],
+  //     mentor: { img: "./media/clubs&committes/data/Opuskriya/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/Opuskriya/6.webp" },
+  //       { img: "./media/clubs&committes/data/Opuskriya/2.webp" },
+  //       { img: "./media/clubs&committes/data/Opuskriya/5.webp" },
+  //       { img: "./media/clubs&committes/data/Opuskriya/4.webp" },
+  //       { img: "./media/clubs&committes/data/Opuskriya/1.webp" },
+  //       { img: "./media/clubs&committes/data/Opuskriya/3.webp" },
+  //       { img: "./media/clubs&committes/data/Opuskriya/7.webp" },
+  //     ],
+  //   },
+  //   7: {
+  //     title: "Prarambh",
+  //     content: `<p>Prarambh (E-Cell) promotes entrepreneurial spirit via events that foster innovation and startup skills.</p>
+  //        <h6>Events</h6>
+  //        <ul>
+  //          <li><strong>Food Fiesta</strong> – annual food festival with student-run stalls</li>
+  //          <li><strong>Pitch Up</strong> – B-Plan competition and startup podium</li>
+  //          <li><strong>Ortus</strong> – storytelling platform with entrepreneur talks</li>
+  //          <li><strong>TiE GRAD</strong> – entrepreneurial workshops in association with TiE</li>
+  //        </ul>`,
+  //     img: "/media/clubs&committes/7club.jpg",
+  //     links: [
+  //       {
+  //         icon: "fab fa-instagram",
+  //         url: "https://www.instagram.com/ecell_imthyderabad/",
+  //       },
+  //       {
+  //         icon: "fas fa-envelope",
+  //         url: "mailto:prarambh.ecell@imthyderabad.edu.in",
+  //       },
+  //       {
+  //         icon: "fab fa-facebook",
+  //         url: "https://www.facebook.com/ecell.imthyd/",
+  //       },
+  //     ],
+  //     mentor: { img: "./media/clubs&committes/data/Prarambh/1.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/Prarambh/all.webp" },
+  //       { img: "./media/clubs&committes/data/Prarambh/all.webp" },
+  //       { img: "./media/clubs&committes/data/Prarambh/all.webp" },
+  //       { img: "./media/clubs&committes/data/Prarambh/all.webp" },
+  //       { img: "./media/clubs&committes/data/Prarambh/all.webp" },
+  //       { img: "./media/clubs&committes/data/Prarambh/all.webp" },
+  //       { img: "./media/clubs&committes/data/Prarambh/all.webp" },
+  //     ],
+  //   },
+  //   8: {
+  //     title: "Tassavur",
+  //     content: `<p><strong>Objective:</strong> Tassavur (Imagination) was formed in 2018 to give a platform for creative expression — art, photography, filmmaking, poetry and more.</p>
+  //        <h6>How we work</h6>
+  //        <p>We create a warm environment through events that channel ideas into tangible creative outcomes.</p>
+  //        <h6>Events & Activities</h6>
+  //        <ul>
+  //          <li>Friendship Day</li>
+  //          <li>Who Did It Better (online poll for creativity)</li>
+  //          <li>Live sketching</li>
+  //          <li>Calligraphy Workshop</li>
+  //          <li>Photo Walk</li>
+  //          <li>Independence Day T-shirt design</li>
+  //          <li>Photography Workshop</li>
+  //          <li>Riveria (painting event)</li>
+  //          <li>Face-Off (face painting)</li>
+  //          <li>Nazaria (single-light photography)</li>
+  //          <li>Product Design Workshop (with Kilkaari & Co.)</li>
+  //        </ul>`,
+  //     img: "/media/clubs&committes/8club.png",
+  //     links: [
+  //       {
+  //         icon: "fab fa-instagram",
+  //         url: "https://www.instagram.com/tassavurimthyd/",
+  //       },
+  //       {
+  //         icon: "fab fa-facebook",
+  //         url: "https://www.facebook.com/TassavurIMTHyd/",
+  //       },
+  //     ],
+  //     mentor: { img: "./media/clubs&committes/data/Tassavur/all.webp" },
+  //     students: [
+  //       { img: "./media/clubs&committes/data/Tassavur/1.webp" },
+  //       { img: "./media/clubs&committes/data/Tassavur/2.webp" },
+  //       { img: "./media/clubs&committes/data/Tassavur/3.webp" },
+  //       { img: "./media/clubs&committes/data/Tassavur/4.webp" },
+  //       { img: "./media/clubs&committes/data/Tassavur/5.webp" },
+  //       { img: "./media/clubs&committes/data/Tassavur/2.webp" },
+  //       { img: "./media/clubs&committes/data/Tassavur/4.webp" },
+  //     ],
+  //   },
+  // };
 
   const committeeData = {
     1: {
@@ -518,12 +569,14 @@ export default function ClubsAndCommittees() {
     },
   };
 
-  const [activeClub, setActiveClub] = useState(Object.values(clubData)[0]);
+  const [activeClub, setActiveClub] = useState(null);
+
   const [activeCommittee, setActiveCommittee] = useState(
     Object.values(committeeData)[0]
   );
 
-  if (loading) return <Loader />;
+  /* Loader */
+  if (loading) return <Loader fullScreen />;
 
   return (
     <>
@@ -593,13 +646,29 @@ export default function ClubsAndCommittees() {
             <div className="container mt-4">
               <div className="card detail-card" style={{ display: "block" }}>
                 <div className="card-body">
-                  <h4 className="card-title text-center">{activeClub.title}</h4>
+                  {/* <h4 className="card-title text-center">{activeClub.title}</h4> */}
 
                   <div
-                    dangerouslySetInnerHTML={{
-                      __html: activeClub.content,
-                    }}
+                    dangerouslySetInnerHTML={{ __html: activeClub.content }}
                   />
+
+                  {activeClub.links && activeClub.links.length > 0 && (
+                    <div className="mt-4">
+                      <div className="d-flex justify-content-start gap-3">
+                        {activeClub.links.map((link, i) => (
+                          <a
+                            key={i}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="social-icon"
+                          >
+                            <i className={link.icon}></i>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="mentor-section text-center mt-5">
                     <div className="d-flex justify-content-center">
@@ -654,7 +723,11 @@ export default function ClubsAndCommittees() {
           </h2>
 
           <div className="slider-container committees">
-            <EmblaRow data={committeeData} onSelect={setActiveCommittee} />
+            <EmblaRow
+              data={committeeData}
+              onSelect={setActiveCommittee}
+              activeItem={activeCommittee}
+            />
           </div>
 
           {activeCommittee && (
@@ -852,7 +925,6 @@ export default function ClubsAndCommittees() {
       }
         .cards-row {
   display: flex;
-  transition: transform 0.5s ease;  /* ❌ THIS OVERRIDES EMBLA */
   gap: 15px;
 }
       .student-track {
@@ -1213,6 +1285,42 @@ export default function ClubsAndCommittees() {
         background-color: #e9ecef;
         color: #333;
       }
+
+      /* ✅ EMBLA FIX — MOBILE */
+@media (max-width: 767.98px) {
+  .clubs .card-wrapper,
+  .committees .card-wrapper {
+    flex: 0 0 80%;   /* ONE CARD PER VIEW */
+    max-width: 80%;
+  }
+
+  .cards-row {
+    gap: 0px;
+  }
+}
+  .cards-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+/* ✅ FINAL FIX — MOBILE IMAGE CARD SIZE */
+@media (max-width: 767.98px) {
+
+  /* Override grid logic ONLY inside sliders */
+  .clubs .card-wrapper,
+  .committees .card-wrapper {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Restore image-card height */
+  .clubs .image-card,
+  .committees .image-card {
+    height: 160px !important;
+  }
+}
+
     `,
         }}
       />
