@@ -1288,11 +1288,6 @@ export default function ClubsAndCommittees() {
 
       /* ✅ EMBLA FIX — MOBILE */
 @media (max-width: 767.98px) {
-  .clubs .card-wrapper,
-  .committees .card-wrapper {
-    flex: 0 0 80%;   /* ONE CARD PER VIEW */
-    max-width: 80%;
-  }
 
   .cards-row {
     gap: 0px;
@@ -1306,13 +1301,7 @@ export default function ClubsAndCommittees() {
 /* ✅ FINAL FIX — MOBILE IMAGE CARD SIZE */
 @media (max-width: 767.98px) {
 
-  /* Override grid logic ONLY inside sliders */
-  .clubs .card-wrapper,
-  .committees .card-wrapper {
-    width: 100% !important;
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
-  }
+
 
   /* Restore image-card height */
   .clubs .image-card,
@@ -1320,6 +1309,25 @@ export default function ClubsAndCommittees() {
     height: 160px !important;
   }
 }
+
+/* ✅ MOBILE — 2 TABS PER VIEW */
+@media (max-width: 767.98px) {
+
+  .clubs .card-wrapper,
+  .committees .card-wrapper {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .cards-row {
+    gap: 10px;
+  }
+
+  .image-card {
+    height: 130px;
+  }
+}
+
 
     `,
         }}
