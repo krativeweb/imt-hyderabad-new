@@ -39,7 +39,7 @@ export default function Footer() {
   return (
     <>
       {/* Preloader */}
-      <div id="preloader" className={`preloader ${loaded ? "fade-out" : ""}`}>
+      {/* <div id="preloader" className={`preloader ${loaded ? "fade-out" : ""}`}>
         <Image
           src="/media/imtpilllogo.webp"
           alt="IMT Hyderabad Logo"
@@ -48,7 +48,7 @@ export default function Footer() {
           priority
           unoptimized
         />
-      </div>
+      </div> */}
       {/* Footer */}
       <footer className="footer position-relative dark-background">
         <div className="container footer-top">
