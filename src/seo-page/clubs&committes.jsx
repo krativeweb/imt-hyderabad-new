@@ -6,7 +6,6 @@ import useEmblaCarousel from "embla-carousel-react";
 import Loader from "@/components/Loader";
 import React, { useCallback, useMemo } from "react";
 
-
 /* =====================================================
    EMBLA SLIDER (NO refs exposed, CSS untouched)
 ===================================================== */
@@ -121,10 +120,8 @@ export default function ClubsAndCommittees() {
   const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [clubData, setClubData] = useState({});
-const [events, setEvents] = useState([]);
-const [calendarEvents, setCalendarEvents] = useState([]);
-
-
+  const [events, setEvents] = useState([]);
+  const [calendarEvents, setCalendarEvents] = useState([]);
 
   useEffect(() => {
     const fetchPageData = async () => {
@@ -142,7 +139,6 @@ const [calendarEvents, setCalendarEvents] = useState([]);
     };
     fetchPageData();
   }, []);
-
 
   useEffect(() => {
     const fetchEventCalendar = async () => {
@@ -259,35 +255,34 @@ const [calendarEvents, setCalendarEvents] = useState([]);
   const [committeeData, setCommitteeData] = useState({});
   const [activeCommittee, setActiveCommittee] = useState(null);
 
-    const handleClubSelect = useCallback((item) => {
+  const handleClubSelect = useCallback((item) => {
     setActiveClub(item);
   }, []);
 
   const handleCommitteeSelect = useCallback((item) => {
     setActiveCommittee(item);
   }, []);
-const [eventsEmblaRef, eventsEmblaApi] = useEmblaCarousel({
-  align: "start",
-  loop: true, // ✅ infinite loop
-  skipSnaps: false,
-});
+  const [eventsEmblaRef, eventsEmblaApi] = useEmblaCarousel({
+    align: "start",
+    loop: true, // ✅ infinite loop
+    skipSnaps: false,
+  });
 
-const getDay = (date) => new Date(date).getDate();
+  const getDay = (date) => new Date(date).getDate();
 
-const getMonth = (date) =>
-  new Date(date).toLocaleString("en-US", { month: "short" });
+  const getMonth = (date) =>
+    new Date(date).toLocaleString("en-US", { month: "short" });
 
-const formatTime = (start, end) => {
-  const to12 = (t) => {
-    const [h, m] = t.split(":");
-    const hour = Number(h);
-    const suffix = hour >= 12 ? "PM" : "AM";
-    const hr = hour % 12 || 12;
-    return `${hr}:${m} ${suffix}`;
+  const formatTime = (start, end) => {
+    const to12 = (t) => {
+      const [h, m] = t.split(":");
+      const hour = Number(h);
+      const suffix = hour >= 12 ? "PM" : "AM";
+      const hr = hour % 12 || 12;
+      return `${hr}:${m} ${suffix}`;
+    };
+    return `${to12(start)} - ${to12(end)}`;
   };
-  return `${to12(start)} - ${to12(end)}`;
-};
-
 
   /* Loader */
   if (loading) return <Loader fullScreen />;
