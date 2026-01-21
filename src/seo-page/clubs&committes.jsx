@@ -4,23 +4,34 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Loader from "@/components/Loader";
+import React, { useCallback, useMemo } from "react";
+
 
 /* =====================================================
    EMBLA SLIDER (NO refs exposed, CSS untouched)
 ===================================================== */
-function EmblaRow({ data = {}, onSelect, activeItem }) {
+const EmblaRow = React.memo(function EmblaRow({
+  data = {},
+  onSelect,
+  activeItem,
+}) {
   const hasItems = Object.keys(data).length > 0;
 
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    hasItems
-      ? {
-          align: "start",
-          dragFree: false,
-        }
-      : undefined,
+  // ✅ MEMOIZED OPTIONS (CRITICAL)
+  const emblaOptions = useMemo(
+    () => ({
+      align: "start",
+      dragFree: false,
+    }),
+    [],
   );
 
-  if (!hasItems) return null; // ⛔ CRITICAL
+  // ✅ USE HERE
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    hasItems ? emblaOptions : undefined,
+  );
+
+  if (!hasItems) return null;
 
   return (
     <div className="cards-slider">
@@ -58,7 +69,7 @@ function EmblaRow({ data = {}, onSelect, activeItem }) {
       </div>
     </div>
   );
-}
+});
 
 /* =====================================================
    STUDENT SLIDER (SAME CSS STRUCTURE)
@@ -112,6 +123,8 @@ export default function ClubsAndCommittees() {
   const [clubData, setClubData] = useState({});
 const [events, setEvents] = useState([]);
 const [calendarEvents, setCalendarEvents] = useState([]);
+
+
 
   useEffect(() => {
     const fetchPageData = async () => {
@@ -245,6 +258,14 @@ const [calendarEvents, setCalendarEvents] = useState([]);
 
   const [committeeData, setCommitteeData] = useState({});
   const [activeCommittee, setActiveCommittee] = useState(null);
+
+    const handleClubSelect = useCallback((item) => {
+    setActiveClub(item);
+  }, []);
+
+  const handleCommitteeSelect = useCallback((item) => {
+    setActiveCommittee(item);
+  }, []);
 const [eventsEmblaRef, eventsEmblaApi] = useEmblaCarousel({
   align: "start",
   loop: true, // ✅ infinite loop
@@ -330,7 +351,7 @@ const formatTime = (start, end) => {
           <div className="slider-container clubs">
             <EmblaRow
               data={clubData}
-              onSelect={setActiveClub}
+              onSelect={handleClubSelect}
               activeItem={activeClub}
             />
           </div>
@@ -434,7 +455,7 @@ const formatTime = (start, end) => {
           <div className="slider-container committees">
             <EmblaRow
               data={committeeData}
-              onSelect={setActiveCommittee}
+              onSelect={handleCommitteeSelect}
               activeItem={activeCommittee}
             />
           </div>
