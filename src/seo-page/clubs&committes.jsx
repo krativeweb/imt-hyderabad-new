@@ -110,6 +110,8 @@ export default function ClubsAndCommittees() {
   const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [clubData, setClubData] = useState({});
+const [events, setEvents] = useState([]);
+const [calendarEvents, setCalendarEvents] = useState([]);
 
   useEffect(() => {
     const fetchPageData = async () => {
@@ -128,6 +130,25 @@ export default function ClubsAndCommittees() {
     fetchPageData();
   }, []);
 
+
+  useEffect(() => {
+    const fetchEventCalendar = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/event-calendar`,
+        );
+        const json = await res.json();
+
+        if (json?.success && json.data?.length) {
+          setCalendarEvents(json.data);
+        }
+      } catch (err) {
+        console.error("Failed to load event calendar", err);
+      }
+    };
+
+    fetchEventCalendar();
+  }, []);
   useEffect(() => {
     const fetchClubs = async () => {
       try {
@@ -201,15 +222,52 @@ export default function ClubsAndCommittees() {
     fetchCommittees();
   }, []);
 
+  useEffect(() => {
+    const fetchEventsGallery = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/event-gallery`,
+        );
+        const json = await res.json();
+
+        if (json?.data?.length) {
+          setEvents(json.data);
+        }
+      } catch (err) {
+        console.error("Failed to load event gallery", err);
+      }
+    };
+
+    fetchEventsGallery();
+  }, []);
+
   const [activeClub, setActiveClub] = useState(null);
 
   const [committeeData, setCommitteeData] = useState({});
   const [activeCommittee, setActiveCommittee] = useState(null);
+const [eventsEmblaRef, eventsEmblaApi] = useEmblaCarousel({
+  align: "start",
+  loop: true, // ✅ infinite loop
+  skipSnaps: false,
+});
 
-  const [eventsEmblaRef, eventsEmblaApi] = useEmblaCarousel({
-    align: "start",
-    loop: false,
-  });
+const getDay = (date) => new Date(date).getDate();
+
+const getMonth = (date) =>
+  new Date(date).toLocaleString("en-US", { month: "short" });
+
+const formatTime = (start, end) => {
+  const to12 = (t) => {
+    const [h, m] = t.split(":");
+    const hour = Number(h);
+    const suffix = hour >= 12 ? "PM" : "AM";
+    const hr = hour % 12 || 12;
+    return `${hr}:${m} ${suffix}`;
+  };
+  return `${to12(start)} - ${to12(end)}`;
+};
+
+
   /* Loader */
   if (loading) return <Loader fullScreen />;
 
@@ -331,7 +389,6 @@ export default function ClubsAndCommittees() {
         <div className="container-fluid position-relative">
           <h2 className="text-center fw-bold mb-4 text-warning">Events</h2>
 
-          {/* LEFT ARROW */}
           <button
             className="event-arrow prev"
             onClick={() => eventsEmblaApi?.scrollPrev()}
@@ -339,7 +396,6 @@ export default function ClubsAndCommittees() {
             &lt;
           </button>
 
-          {/* RIGHT ARROW */}
           <button
             className="event-arrow next"
             onClick={() => eventsEmblaApi?.scrollNext()}
@@ -347,16 +403,14 @@ export default function ClubsAndCommittees() {
             &gt;
           </button>
 
-          {/* EMBLA VIEWPORT */}
           <div className="events-viewport" ref={eventsEmblaRef}>
-            {/* EMBLA CONTAINER */}
             <div className="events-row">
-              {["1.webp", "2.webp", "3.webp", "4.webp"].map((img, i) => (
-                <div className="events-slide" key={i}>
+              {events.map((event) => (
+                <div className="events-slide" key={event._id}>
                   <div className="image-wrapper">
                     <img
-                      src={`/media/events/${img}`}
-                      alt=""
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/${event.image}`}
+                      alt="Event"
                       className="img-fluid"
                     />
                   </div>
@@ -431,56 +485,30 @@ export default function ClubsAndCommittees() {
           </h2>
 
           <div className="row g-4">
-            <div className="col-md-4 col-sm-6">
-              <div className="event-card">
-                <div className="event-date">
-                  <span className="day">15</span>
-                  <span className="month">Oct</span>
-                </div>
-                <div className="event-info">
-                  <h5 className="event-title">Tech Workshop</h5>
-                  <p className="event-time">10:00 AM - 1:00 PM</p>
-                  <p className="event-location">Auditorium, Block A</p>
-                  <button className="btn btn-warning btn-sm view-details">
-                    View Details
-                  </button>
-                </div>
-              </div>
-            </div>
+            {calendarEvents.map((event) => (
+              <div className="col-md-4 col-sm-6" key={event._id}>
+                <div className="event-card">
+                  <div className="event-date">
+                    <span className="day">{getDay(event.event_date)}</span>
+                    <span className="month">{getMonth(event.event_date)}</span>
+                  </div>
 
-            <div className="col-md-4 col-sm-6">
-              <div className="event-card">
-                <div className="event-date">
-                  <span className="day">22</span>
-                  <span className="month">Oct</span>
-                </div>
-                <div className="event-info">
-                  <h5 className="event-title">Art Exhibition</h5>
-                  <p className="event-time">2:00 PM - 5:00 PM</p>
-                  <p className="event-location">Gallery Hall</p>
-                  <button className="btn btn-warning btn-sm view-details">
-                    View Details
-                  </button>
-                </div>
-              </div>
-            </div>
+                  <div className="event-info">
+                    <h5 className="event-title">{event.event_title}</h5>
 
-            <div className="col-md-4 col-sm-6">
-              <div className="event-card">
-                <div className="event-date">
-                  <span className="day">30</span>
-                  <span className="month">Oct</span>
-                </div>
-                <div className="event-info">
-                  <h5 className="event-title">Music Concert</h5>
-                  <p className="event-time">6:00 PM - 9:00 PM</p>
-                  <p className="event-location">Open Ground</p>
-                  <button className="btn btn-warning btn-sm view-details">
-                    View Details
-                  </button>
+                    <p className="event-time">
+                      {formatTime(event.start_time, event.end_time)}
+                    </p>
+
+                    <p className="event-location">{event.event_place}</p>
+
+                    <button className="btn btn-warning btn-sm view-details">
+                      View Details
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -750,23 +778,27 @@ export default function ClubsAndCommittees() {
   display: flex;
 }
 
+/* Desktop: 3 slides */
 .events-slide {
-  flex: 0 0 25%; /* 4 slides desktop */
+  flex: 0 0 33.3333%;
   padding: 0 12px;
   box-sizing: border-box;
 }
 
+/* Tablet: 2 slides */
 @media (max-width: 991px) {
   .events-slide {
-    flex: 0 0 50%; /* 2 slides tablet */
+    flex: 0 0 50%;
   }
 }
 
+/* Mobile: 1 slide */
 @media (max-width: 576px) {
   .events-slide {
-    flex: 0 0 100%; /* 1 slide mobile */
+    flex: 0 0 100%;
   }
 }
+
 
 /* ARROWS */
 .event-arrow {
@@ -812,6 +844,59 @@ export default function ClubsAndCommittees() {
     position: static;
   }
 }
+
+  .events-calendar-section {
+        background: #163977;
+        color: #fff;
+      }
+      .event-card {
+        display: flex;
+        align-items: center;
+        background: #d4d4d4;
+        border-radius: 12px;
+        padding: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      }
+      .event-date {
+        text-align: center;
+        background: #ffb433;
+        color: #163977;
+        border-radius: 12px;
+        padding: 10px;
+        width: 60px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      .event-date .day {
+        font-size: 22px;
+        font-weight: bold;
+        display: block;
+      }
+      .event-date .month {
+        font-size: 14px;
+        text-transform: uppercase;
+      }
+      .event-info .event-title {
+        font-size: 18px;
+        color: #163977;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .event-info .event-time,
+      .event-info .event-location {
+        font-size: 14px;
+        margin-bottom: 3px;
+      }
+      .event-info .view-details {
+        margin-top: 5px;
+        font-size: 12px;
+        padding: 3px 8px;
+      }
+
     `,
         }}
       />
