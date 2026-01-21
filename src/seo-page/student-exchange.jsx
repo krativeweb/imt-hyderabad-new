@@ -176,7 +176,7 @@ export default function StudentExchangePage() {
                           />
                         </div>
                         <div
-                          className="student-content"
+                      
                           style={{ flex: 1 }}
                           dangerouslySetInnerHTML={{ __html: s.content }}
                         />
@@ -188,106 +188,108 @@ export default function StudentExchangePage() {
             </div>
           </div>
 
-          {/* ================= INBOUND ================= */}
-          <div
-            className="tab-pane fade bg-white p-md-4 rounded-4"
-            id="tab-ie"
-            role="tabpanel"
-          >
-            <nav className="nav nav-pills gap-2 mb-3 justify-content-center">
-              <a
-                className="nav-link bg-light rounded-pill active"
-                data-bs-toggle="pill"
-                href="#sub-in-ex"
-                role="tab"
-              >
-                Exchange students
-              </a>
-              <a
-                className="nav-link bg-light rounded-pill"
-                data-bs-toggle="pill"
-                href="#sub-in-form"
-                role="tab"
-              >
-                Application Form
-              </a>
-            </nav>
+          {/* ================= INBOUND (FIXED) ================= */}
+          <div className="tab-content container mt-4 mb-4">
+            <div
+              className="tab-pane fade show bg-white p-md-4 rounded-4 text-black"
+              id="tab-ie"
+              role="tabpanel"
+            >
+              <nav className="nav nav-pills gap-2 mb-3 justify-content-center p-3 mt-md-2 mt-3">
+                <a
+                  className="nav-link bg-light text-dark rounded-pill tab active"
+                  data-bs-toggle="pill"
+                  href="#sub-in-ex"
+                >
+                  Exchange students
+                </a>
+                <a
+                  className="nav-link bg-light text-dark rounded-pill tab"
+                  data-bs-toggle="pill"
+                  href="#sub-in-form"
+                >
+                  Application Form
+                </a>
+              </nav>
 
-            <div className="tab-content">
-              {/* INBOUND STUDENTS */}
-              <div
-                className="tab-pane fade show active"
-                id="sub-in-ex"
-                role="tabpanel"
-              >
-                <div className="row g-4">
-                  <div className="col-md-4">
-                    <nav className="nav nav-pills flex-column gap-2">
-                      {inbound.map((s, i) => (
-                        <a
-                          key={s._id}
-                          className={`nav-link bg-light rounded-pill ${
-                            i === 0 ? "active" : ""
-                          }`}
-                          data-bs-toggle="pill"
-                          href={`#in-std${i + 1}`}
-                          role="tab"
-                        >
-                          {s.name}
-                        </a>
-                      ))}
-                    </nav>
-                  </div>
+              <div className="tab-content container-sm text-black mb-5">
+                {/* ===== INBOUND STUDENTS ===== */}
+                <div className="tab-pane fade show active" id="sub-in-ex">
+                  <div className="row g-4">
+                    <div className="col-12 col-md-4">
+                      <div
+                        className="position-sticky top-0"
+                        style={{
+                          maxHeight: "80vh",
+                          overflowY: "auto",
+                          padding: "0.5rem",
+                        }}
+                      >
+                        <nav className="nav nav-pills flex-column gap-2">
+                          {inbound.map((s, i) => (
+                            <a
+                              key={s._id}
+                              className={`nav-link bg-light text-dark rounded-pill ${i === 0 ? "active" : ""}`}
+                              data-bs-toggle="pill"
+                              href={`#in-std${i + 1}`}
+                            >
+                              {s.name}
+                            </a>
+                          ))}
+                        </nav>
+                      </div>
+                    </div>
 
-                  <div className="col-md-8">
-                    <div className="tab-content">
-                      {inbound.map((s, i) => (
-                        <div
-                          key={s._id}
-                          className={`tab-pane fade ${
-                            i === 0 ? "show active" : ""
-                          }`}
-                          id={`in-std${i + 1}`}
-                          role="tabpanel"
-                        >
-                          <div className="card mb-3">
-                            <div className="row g-0">
-                              <div className="col-md-4">
-                                <img
-                                  src={`${process.env.NEXT_PUBLIC_API_URL}/${s.image}`}
-                                  className="img-fluid rounded-start"
-                                  alt={s.name}
-                                />
+                    <div className="col-12 col-md-8">
+                      <div className="tab-content">
+                        {inbound.map((s, i) => (
+                          <div
+                            key={s._id}
+                            className={`tab-pane fade ${i === 0 ? "show active" : ""}`}
+                            id={`in-std${i + 1}`}
+                          >
+                            <div className="card mb-3">
+                              <div className="row g-0">
+                                <div className="col-md-4">
+                                  <img
+                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${s.image}`}
+                                    className="img-fluid rounded-start"
+                                    alt={s.name}
+                                  />
+                                </div>
+                                <div className="col-md-8">
+                                  <div
+                                 
+                                    dangerouslySetInnerHTML={{
+                                      __html: s.content,
+                                    }}
+                                  />
+                                </div>
                               </div>
-                              <div
-                                className="col-md-8"
-                                dangerouslySetInnerHTML={{ __html: s.content }}
-                              />
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* APPLICATION FORM */}
-              <div className="tab-pane fade" id="sub-in-form" role="tabpanel">
-                <div dangerouslySetInnerHTML={{ __html: applicationForm }} />
+                {/* ===== APPLICATION FORM ===== */}
+                <div className="tab-pane fade" id="sub-in-form">
+                  <div dangerouslySetInnerHTML={{ __html: applicationForm }} />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-
       {/* SCOPED STYLES */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
       /* Gradient banner with subtle overlay */
       .faculty-hero {
-        background: url("/media/std-ex/banner/international relations.jpg");
+   
         position: relative;
         background-size: cover;
         height: 50vh;
