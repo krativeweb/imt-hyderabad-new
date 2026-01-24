@@ -124,193 +124,152 @@ export default function Rankings() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-      .faculty-hero {
-        background: url("./media/hero.webp");
-        position: relative;
-        background-size: cover;
-        height: 50vh;
-          background-position: center !important;
-      }
-      .faculty-hero::before {
+      /* Global Adjustments */
+      body { color: #333; line-height: 1.6; }
+      .section-title { font-size: 2.5rem; font-weight: 800; position: relative; padding-bottom: 15px; }
+      .section-title::after { content: ""; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100px; height: 4px; background: #ffc107; border-radius: 2px; }
+
+      /* Hero & Banner */
+      .faculty-hero { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+      .faculty-hero h2 { margin-top: 0 !important; }
+
+    .faculty-hero::before {
         content: "";
         position: absolute;
         inset: 0;
         background: rgba(0, 0, 0, 0.3);
+        z-index: 1;
       }
       .faculty-hero h2,
       .faculty-hero p {
         position: relative;
-        z-index: 1;
+        z-index: 2;
       }
-      .faculty-hero h2 {
-        margin-top: 150px;
-      }
-
-      .faculty-card {
-        background: #f8f9fa;
-        border: none;
-        border-radius: 1.5rem;
+      /* Grid Layout */
+      .rankings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 25px;
       }
 
-      .faculty-img {
-        border-radius: 1.2rem;
-        transition: transform 0.4s ease;
-      }
-      .faculty-img:hover {
-        transform: scale(1.03);
-      }
-
-      .social-icon {
-        display: inline-flex;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        justify-content: center;
-        align-items: center;
-        background: #ffc107;
-        color: #ffffffff;
-        transition: all 0.3s;
-      }
-      .social-icon:hover {
-        background: #5390d9;
-        color: #ffffffff;
-        transform: translateY(-3px);
-      }
-
-      .faculty-tabs .nav-pills .nav-link {
-        border-radius: 50rem;
-        background: #e9ecef;
-        color: #333;
-        transition: all 0.3s;
-      }
-      .faculty-tabs .nav-pills .nav-link.active {
-        background: #ffc107;
-        color: #000000ff;
-      }
-
-      body {
-        color: #333;
-        line-height: 1.6;
-      }
-
-      .section-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--imt-primary);
-        margin-bottom: 1.5rem;
+      /* Card Styling */
+      .ranking-box {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        border: 1px solid #edf2f7;
         position: relative;
-        padding-bottom: 0.5rem;
+        overflow: hidden;
       }
+      .ranking-box:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
 
-      .section-title::after {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80px;
-        height: 3px;
-        background: var(--imt-secondary);
-      }
+      /* Specific Card Types */
+      .featured-card { border: 2px solid #08317a; background: #f0f7ff; }
+      .dark-card { background: #08317a; color: white; }
+      .card-top-glow { position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, #ffc107, #08317a); }
 
-      .rankings-card {
-        background: #fff;
-        border-radius: 1rem;
-        box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.08);
-        padding: 1.75rem;
-        margin-bottom: 2rem;
-        border: 1px solid #e9ecef;
-      }
+      /* Rankings Headers */
+      .ranking-source { font-size: 1.1rem; font-weight: 800;  color: #08317a; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+      .source-logo { height: 50px; object-fit: contain; }
 
-      .ranking-header {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: var(--imt-primary);
-        margin: 1.5rem 0 0.75rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #eee;
-      }
+      /* Badges & Tags */
+      .year-tag { display: inline-block; background: #08317a; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 50px; margin-bottom: 12px; }
+      .year-tag.gold { background: #ffc107; color: #000; }
+      .year-tag.muted { background: #e2e8f0; color: #64748b; }
 
-      .ranking-list li {
-        padding: 0.5rem 0;
-        font-size: 0.95rem;
-      }
+      .highlight-pill { background: #ebf4ff; color: #08317a; font-weight: 800; padding: 8px 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; font-size: 0.9rem; border: 1px dashed #08317a; }
+      .rating-badge-glow { background: #ffc107; color: #000; font-weight: 900; text-align: center; padding: 10px; border-radius: 10px; box-shadow: 0 0 15px rgba(255, 193, 7, 0.5); animation: pulse-glow 2s infinite; }
 
-      .institution-rank {
-        font-weight: 700;
-        color: var(--imt-secondary);
-        min-width: 40px;
-        display: inline-block;
-      }
+      /* Ranks */
+      .display-rank { font-size: 2.5rem; font-weight: 900; line-height: 1; margin-bottom: 5px; }
+      .small-text { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
 
-      .section-bg {
-        background-color: #151f54;
-        padding: 3rem 0;
-        border-radius: 15px;
-        margin: 2rem 0;
-      }
+      .rank-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; font-size: 0.92rem; font-weight: 500; }
+      .rank-pill { min-width: 55px; height: 26px; display: flex; align-items: center; justify-content: center; background: #ffc107; color: #000; font-weight: 800; border-radius: 50px; font-size: 0.8rem; }
+      .rank-pill.muted { background: #cbd5e1; }
+      .rank-pill.gold { background: #ffc107; box-shadow: 0 4px 10px rgba(255,193,7,0.3); }
 
-      .ranking-logo-card {
-        background: white;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 1.5rem;
-        transition: all 0.3s ease;
-        height: 100%;
-      }
+      /* Logos Section */
+      .ranking-logo-card { background: white; border-radius: 15px; padding: 20px; transition: 0.3s; height: 120px; display: flex; align-items: center; justify-content: center; }
+      .ranking-logo-card:hover { transform: scale(1.05); }
+      .logo-container img { max-height: 70px; max-width: 100%; object-fit: contain; }
 
-      .logo-container {
-        height: 120px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-        max-width: 200px;
+      /* Animations */
+      @keyframes pulse-glow {
+        0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 193, 7, 0.4); }
+        50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(255, 193, 7, 0.7); }
+        100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 193, 7, 0.4); }
       }
-
-      .logo-container img {
-        max-height: 100%;
-        max-width: 100%;
-        object-fit: contain;
-        filter: brightness(0.9);
-        transition: all 0.3s ease;
-      }
+      .animate-pulse { animation: pulse-glow 2s infinite; }
 
       @media (max-width: 768px) {
-        .logo-container {
-          height: 100px;
-        }
-        .section-title {
-          font-size: 1.5rem;
-        }
+        .rankings-grid { grid-template-columns: 1fr; }
+        .section-title { font-size: 1.8rem; }
       }
+        /* Hover Background & Text Color Fix */
+.ranking-box:hover {
+  background: #09327a;
+  border-color: #09327a;
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(9, 50, 122, 0.35);
+}
 
-      @media (max-width: 576px) {
-        .logo-container {
-          height: 80px;
-          max-width: 150px;
-        }
-        .section-title {
-          font-size: 1.3rem;
-        }
-      }
+/* Make all text white on hover */
+.ranking-box:hover,
+.ranking-box:hover .ranking-source,
+.ranking-box:hover .ranking-year,
+.ranking-box:hover .ranking-item,
+.ranking-box:hover .small-text,
+.ranking-box:hover .highlight-pill {
+  color: #ffffff;
+}
 
-      @media (max-width: 768px) {
-        .section-title {
-          font-size: 1.7rem;
-        }
-        .ranking-header {
-          font-size: 1.2rem;
-        }
-        .ranking-list li {
-          font-size: 0.9rem;
-        }
-      }
+/* Rank pill adjustments on hover */
+.ranking-box:hover .rank-pill {
+  background: #ffc107;
+  color: #000;
+}
 
-      @media (max-width: 576px) {
-        .section-title {
-          font-size: 1.5rem;
-        }
-      }
+/* Year tags on hover */
+.ranking-box:hover .year-tag {
+  background: #ffc107;
+  color: #000;
+}
+
+/* Dashed highlight pill fix */
+.ranking-box:hover .highlight-pill {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #ffc107;
+}
+
+/* If card is dark-card already, keep consistency */
+.dark-card:hover {
+  background: #09327a;
+}
+  /* Disable hover color change for featured card */
+.featured-card:hover {
+  background: #f0f7ff;           /* original background */
+  border-color: #08317a;
+  transform: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* Keep original text colors on hover */
+.featured-card:hover,
+.featured-card:hover .ranking-source,
+.featured-card:hover .display-rank,
+.featured-card:hover .small-text {
+  color: inherit;
+}
+
+/* Prevent hover rules from affecting inner elements */
+.featured-card:hover .rank-pill,
+.featured-card:hover .year-tag {
+  background: inherit;
+  color: inherit;
+}
     `,
         }}
       />
