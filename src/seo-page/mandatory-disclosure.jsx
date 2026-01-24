@@ -46,7 +46,7 @@ const MandatoryDisclosure = () => {
           style={{
             backgroundImage: pageData?.banner_image
               ? `url(${API_URL}${pageData.banner_image})`
-              : "url('./media/banners/mandatorydisclosure.webp')",
+              : "",
             position: "relative",
             backgroundSize: "cover",
             height: "50vh",
@@ -57,14 +57,7 @@ const MandatoryDisclosure = () => {
             dangerouslySetInnerHTML={{
               __html: pageData?.banner_text
                 ? DOMPurify.sanitize(pageData.banner_text)
-                : `
-                  <h2 class="display-5 fw-bold mb-2">Mandatory Disclosure</h2>
-                  <p class="text-white">
-                    Transparent, ethical, and accountable in every operation.<br/>
-                    All statutory and regulatory information is shared openly to uphold
-                    institutional integrity and trust
-                  </p>
-                `,
+                : "",
             }}
           />
         </div>
