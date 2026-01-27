@@ -140,6 +140,9 @@ export default function JournalComponents() {
                               <p>
                                 <strong>Journal:</strong> {pub.journal_name}
                               </p>
+                                    <p>
+                                <strong>Volume:</strong> {pub.volume}
+                              </p>
 
                               {pub.publication_url && (
                                 <p>
