@@ -279,8 +279,9 @@ export default function IMTHyderabad() {
        <AdmissionInfoSection
   infoHtml={data?.[0]?.admission_information}
 />
-        <ProgramHighlightsSection
+ <ProgramHighlightsSection
   highlightsHtml={data?.[0]?.program_highlights}
+  knowMoreHtml={data?.[0]?.know_more}
 />
       <CampusLifeSection
   contentHtml={data?.[0]?.life_imt_Hyderabad_campus}
