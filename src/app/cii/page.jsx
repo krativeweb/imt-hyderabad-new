@@ -71,7 +71,9 @@ export default function CII() {
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb bg-transparent p-0 m-0">
                 <li className="breadcrumb-item">
-                  <Link href="/" className="text-white fw-bold">
+                  <Link href="/" className="text-white fw-bold"
+                    className="text-white fw-bold"
+                    style={{ textDecoration: "none" }}>
                     Home
                   </Link>
                 </li>
