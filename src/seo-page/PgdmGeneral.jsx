@@ -158,7 +158,7 @@ export default function PGDMGeneralSection() {
                 data-bs-toggle="pill"
                 data-bs-target="#competency"
               >
-                COMPETENCY GOAL
+               Program Learning Outcomes
               </button>
             </li>
           </ul>
