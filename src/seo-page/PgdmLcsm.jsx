@@ -119,7 +119,7 @@ export default function PGDMLSCMSection() {
               ["programoutcome", "PROGRAM OUTCOME"],
               ["pedagogy", "PEDAGOGY"],
               ["career", "CAREER OPPORTUNITIES"],
-              ["competency", "COMPETENCY GOAL"],
+              ["competency", "Program Learning Outcomes"],
             ].map(([id, label], i) => (
               <li className="nav-item m-1" key={id}>
                 <button
