@@ -125,7 +125,7 @@ export default function PGDMFinanceSection() {
               ["programoutcome", "PROGRAM OUTCOME"],
               ["pedagogy", "PEDAGOGY"],
               ["career", "CAREER OPPORTUNITIES"],
-              ["competency", "COMPETENCY GOAL"],
+              ["competency", "Program Learning Outcomes"],
             ].map(([id, label], index) => (
               <li key={id} className="nav-item m-1">
                 <button
