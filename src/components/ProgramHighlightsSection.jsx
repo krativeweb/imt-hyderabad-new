@@ -1,10 +1,12 @@
 "use client";
+import React, { useState } from "react";
 
 export default function ProgramHighlightsSection({ highlightsHtml }) {
     const [showFaq, setShowFaq] = useState(false);
   if (!highlightsHtml) return null;
 
   return (
+    <>
     <section className="py-5" style={{ background: "#0f265a" }}>
       <div className="container">
         {/* Section Title – keep static */}
@@ -18,8 +20,6 @@ export default function ProgramHighlightsSection({ highlightsHtml }) {
         />
       </div>
     </section>
-
-
      {/* New Band After Global Immersion */}
       <section style={{ background: "#0f2559" }}>
         <div className="container py-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
@@ -1790,5 +1790,8 @@ export default function ProgramHighlightsSection({ highlightsHtml }) {
             )}
           </div>
         </section>
+      )}
+
+   </> 
   );
 }
