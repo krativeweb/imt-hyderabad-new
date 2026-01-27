@@ -165,6 +165,14 @@ export default function StudyingPage() {
           )}
 
           {/* ==== ACCORDIONS – STUDENT ACTIVITIES & LOGISTICS ==== */}
+        <div className="container py-5 px-4">
+  <h2
+    className="s-heading text-center mb-4"
+    style={{ color: "#08317a", fontWeight: 700 }}
+  >
+    STUDENT ACTIVITIES &amp; LOGISTICS
+  </h2>
+          
           <div className="row g-4">
             {/* -------- LEFT COLUMN -------- */}
             <div className="col-12 col-md-6">
@@ -233,6 +241,7 @@ export default function StudyingPage() {
                 ))}
               </div>
             </div>
+          </div>
           </div>
         </div>
 
