@@ -82,6 +82,16 @@ export default function FpmAdmission() {
       {/* PAGE CONTENT */}
       <div className="fpm-page py-5">
         <div className="container">
+                <div className="text-center mb-5">
+            <h2 className="fw-bold text-warnig">
+              Fellow Program in Management (FPM)
+            </h2>
+            <p className="text-muted">
+              Discover academic excellence and research opportunities at IMT
+              Hyderabad.
+            </p>
+          </div>
+
           {/* NAV TABS */}
           <ul className="nav nav-pills justify-content-center mb-4 flex-wrap">
             {[
