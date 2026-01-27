@@ -113,11 +113,11 @@ export default function CII() {
       </section>
 
       {/* ================= Styles ================= */}
-    <style
+  <style
   dangerouslySetInnerHTML={{
     __html: `
       .faculty-hero {
-        background: url("/media/banners/npci.jpg") no-repeat center center;
+        background: url("/media/banners/nabard.jpg") no-repeat center center;
         background-size: cover;
         height: 60vh !important;
         position: relative;
