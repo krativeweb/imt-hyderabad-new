@@ -912,10 +912,14 @@ export default function ClubsAndCommittees() {
         font-size: 12px;
         padding: 3px 8px;
       }
-
+ .card-overlay h5 {
+        margin: 0;
+        font-size: 0.85rem;
+      }
     `,
         }}
       />
     </>
   );
 }
+
