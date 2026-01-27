@@ -132,7 +132,7 @@ export default function PGDMMarketingSection() {
             </li>
             <li className="nav-item m-1">
               <button className="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#competency">
-                COMPETENCY GOAL
+           Program Learning Outcomes
               </button>
             </li>
           </ul>
