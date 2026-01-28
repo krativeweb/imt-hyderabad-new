@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-
+import DistinguishedClientsSection from "@/components/DistinguishedClient";
 
 
 export default function PrivacyPolicySection() {
@@ -18,6 +18,11 @@ export default function PrivacyPolicySection() {
       });
     }
   }, []);
+
+    const [emblaRef] = useEmblaCarousel(
+      { loop: true, align: "start", containScroll: "trimSnaps" },
+      [Autoplay({ delay: 2000, stopOnInteraction: false })]
+    );
 
   // Owl Carousel options for placement alliances
   const placementCarouselOptions = {
@@ -400,26 +405,7 @@ Our privacy policy safeguards personal information with integrity, ensuring resp
       </section>
 
       {/* Placement Alliances Section */}
-      <section className="placement-alliances-section py-4" data-aos="fade-up" data-aos-duration="1000">
-        <div className="container text-center">
-          <h6 className="subtitle text-center text-warning" data-aos="fade-down" data-aos-delay="100">
-            Our Clients
-          </h6>
-          <h2 className="section-title mb-4" data-aos="zoom-in" data-aos-delay="200">
-            Our Distinguished Clients
-          </h2>
-          <p className="mb-5" data-aos="fade-up" data-aos-delay="300">
-            We are proud to be associated with top companies.
-          </p>
-          <OwlCarousel className="owl-theme" {...placementCarouselOptions}>
-            {placementAlliances.map((item, index) => (
-              <div key={index} className="item">
-                <img src={item.src} alt={item.alt} />
-              </div>
-            ))}
-          </OwlCarousel>
-        </div>
-      </section>
+    <DistinguishedClientsSection emblaRef={emblaRef} />
 
       {/* Contact Strip */}
       <section className="contact-strip py-3">
