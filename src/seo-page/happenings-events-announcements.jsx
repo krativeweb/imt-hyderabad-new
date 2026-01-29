@@ -38,13 +38,11 @@ const fetchEvents = async () => {
 
     const result = res.data;
 
-    // if (isMounted && result?.success && Array.isArray(result.data)) {
-    //   setEvents(
-    //     result.data
-    //       .filter((e) => e.isDeleted === false)
-    //       .sort((a, b) => new Date(a.event_date) - new Date(b.event_date))
-    //   );
-    // }
+    if (isMounted && result?.success && Array.isArray(result.data)) {
+      setEvents(
+        result.data.filter((e) => e.isDeleted === false)
+      );
+    }
   } catch (err) {
     console.error("Events fetch failed", err);
     setError("Failed to load events");
@@ -452,4 +450,5 @@ height: 80vh;
 };
 
 export default HappeningsPage;
+
 
