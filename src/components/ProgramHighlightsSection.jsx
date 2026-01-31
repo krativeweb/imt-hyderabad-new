@@ -48,6 +48,38 @@ export default function ProgramHighlightsSection({
             <div dangerouslySetInnerHTML={{ __html: knowMoreHtml }} />
           </div>
         </section>
+
+      <section className="contact-strip">
+  <div className="container">
+    <div className="strip-inner">
+      <h4>Contact Details</h4>
+      <div className="strip-info">
+        <span>
+          <strong>Email ID :</strong>{" "}
+          <a
+            href="mailto:admissions@imthyderabad.edu.in"
+            className="contact-link"
+          >
+            admissions@imthyderabad.edu.in
+          </a>
+        </span>
+
+        <span className="divider">|</span>
+
+        <span>
+          <strong>Phone :</strong>{" "}
+          <a href="tel:9391424273" className="contact-link">
+            9391424273
+          </a>{" "}
+          /{" "}
+          <a href="tel:9391424275" className="contact-link">
+            9391424275
+          </a>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
       )}
     </>
   );
