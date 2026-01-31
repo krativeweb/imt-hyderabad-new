@@ -1,12 +1,37 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function ProgramHighlightsSection({
   highlightsHtml,
   knowMoreHtml,
 }) {
   const [showFaq, setShowFaq] = useState(false);
+  const [contactInfo, setContactInfo] = useState({
+    email: "",
+    mobile: "",
+  });
 
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/contact-info`,
+        );
+        const data = await res.json();
+
+        if (Array.isArray(data) && data.length > 0) {
+          setContactInfo({
+            email: data[0].admission_pgdm_email,
+            mobile: data[0].admission_mobile,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch contact info", error);
+      }
+    };
+
+    fetchContactInfo();
+  }, []);
   if (!highlightsHtml) return null;
 
   return (
@@ -47,40 +72,42 @@ export default function ProgramHighlightsSection({
           <div className="container">
             <div dangerouslySetInnerHTML={{ __html: knowMoreHtml }} />
           </div>
-        </section>  
-    )}
+        </section>
+      )}
+      {/* CONTACT STRIP (API BASED) */}
+      {(contactInfo.email || contactInfo.mobile) && (
+        <section className="contact-strip">
+          <div className="container">
+            <div className="strip-inner">
+              <h4>Contact Details</h4>
 
-       <section className="contact-strip">
-  <div className="container">
-    <div className="strip-inner">
-      <h4>Contact Details</h4>
-      <div className="strip-info">
-        <span>
-          <strong>Email ID :</strong>{" "}
-          <a
-            href="mailto:admissions@imthyderabad.edu.in"
-            className="contact-link"
-          >
-            admissions@imthyderabad.edu.in
-          </a>
-        </span>
+              <div className="strip-info">
+                {contactInfo.email && (
+                  <span>
+                    <strong>Email ID :</strong>{" "}
+                    <a
+                      href={`mailto:${contactInfo.email}`}
+                      className="contact-link"
+                    >
+                      {contactInfo.email}
+                    </a>
+                  </span>
+                )}
 
-        <span className="divider">|</span>
+                {contactInfo.email && contactInfo.mobile && (
+                  <span className="divider">|</span>
+                )}
 
-        <span>
-          <strong>Phone :</strong>{" "}
-          <a href="tel:9391424273" className="contact-link">
-            9391424273
-          </a>{" "}
-          /{" "}
-          <a href="tel:9391424275" className="contact-link">
-            9391424275
-          </a>
-        </span>
-      </div>
-    </div>
-  </div>
-</section>
+                {contactInfo.mobile && (
+                  <span>
+                    <strong>Phone :</strong> {contactInfo.mobile}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }
