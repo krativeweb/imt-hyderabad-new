@@ -47,9 +47,10 @@ export default function ProgramHighlightsSection({
           <div className="container">
             <div dangerouslySetInnerHTML={{ __html: knowMoreHtml }} />
           </div>
-        </section>
+        </section>  
+    )}
 
-      <section className="contact-strip">
+       <section className="contact-strip">
   <div className="container">
     <div className="strip-inner">
       <h4>Contact Details</h4>
@@ -80,7 +81,6 @@ export default function ProgramHighlightsSection({
     </div>
   </div>
 </section>
-      )}
     </>
   );
 }
