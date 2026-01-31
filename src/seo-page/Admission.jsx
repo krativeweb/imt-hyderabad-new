@@ -182,6 +182,60 @@ export default function IMTHyderabad() {
       .nav-tabs .nav-link {
         color: #333;
       }
+      .contact-strip {
+    width: 100%;
+    background: #0f2559;
+    color: #fff;
+    padding: 18px 0;
+  }
+
+  .strip-inner {
+    text-align: center;
+  }
+
+  .strip-inner h4 {
+    color: #ffcc00;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .strip-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 15px;
+  }
+
+  .strip-info strong {
+    color: #ffcc00;
+  }
+
+  .divider {
+    opacity: 0.6;
+  }
+
+  @media (max-width: 576px) {
+    .strip-info {
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .divider {
+      display: none;
+    }
+  }
+    .contact-link {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.contact-link:hover {
+  text-decoration: underline;
+  color: #ffcc00;
+}
+
     `,
         }}
       />
