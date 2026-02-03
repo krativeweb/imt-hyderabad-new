@@ -25,11 +25,13 @@ export default function Preloader() {
       <Image
         src="/media/imtpilllogo.webp"
         alt="IMT Hyderabad Logo"
-        width={300}
-        height={100}
-        priority
-        unoptimized
+         width={150}
+          height={100}
+          priority
+          unoptimized
+          style={{ width: 300, height: 100 }}
       />
     </div>
   );
 }
+
